@@ -1,9 +1,10 @@
 package com.dawan.gquizz.entities;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.*;
 
-import java.util.Dictionary;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,6 +12,7 @@ import java.util.Dictionary;
 @Setter
 
 @Entity
+@Table(name = "users")
 public class User implements IUser {
     private String email;
 
@@ -18,7 +20,7 @@ public class User implements IUser {
 
     private String password;
 
-    public Dictionary<String, Integer> scores;
+    public Set<Integer> scores;
 
     @Override
     public int getScoreByCategory(String category) {
