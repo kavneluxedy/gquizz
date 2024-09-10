@@ -1,6 +1,6 @@
 package com.dawan.gquizz;
 
-import com.dawan.gquizz.entities.Scores;
+import com.dawan.gquizz.entities.Score;
 import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.IUserRepository;
 
@@ -9,9 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 
@@ -24,8 +22,6 @@ public class GquizzApplication implements CommandLineRunner {
     public static void main(String[] args) {
         SpringApplication.run(GquizzApplication.class, args);
     }
-
-    public enum CATEGORY {tv_cinema, art_litterature, musique, sport, actu_politique, culture_generale}
     
     @Override
     public void run(String... args) throws Exception {
@@ -36,12 +32,12 @@ public class GquizzApplication implements CommandLineRunner {
         user.setPassword("password123");
 
         // Créer des scores pour chaque catégorie
-        Set<Scores> scores = new HashSet<>();
+        Set<Score> scores = new HashSet<>();
         scores.add(createScore(user, "tv_cinema", 100));
         scores.add(createScore(user, "art_litterature", 50));
         scores.add(createScore(user, "musique", 75));
         scores.add(createScore(user, "sport", 60));
-        scores.add(createScore(user, "politique", 80));
+        scores.add(createScore(user, "actu_politique", 80));
         scores.add(createScore(user, "culture_generale", 90));
 
         user.setScores(scores);
@@ -50,10 +46,12 @@ public class GquizzApplication implements CommandLineRunner {
         userRepository.save(user);
 
         System.out.println("Utilisateur avec scores enregistré avec succès !");
+
+        System.out.println(userRepository.getBestScores());
     }
 
-    private Scores createScore(User user, String category, int scoreValue) {
-        Scores score = new Scores();
+    private Score createScore(User user, String category, int scoreValue) {
+        Score score = new Score();
         score.setUser(user);
         score.setCategory(category);
         score.setScore(scoreValue);
