@@ -1,12 +1,12 @@
 package com.dawan.gquizz.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
-import java.util.Set;
+import java.io.Serializable;
+import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,7 +15,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User implements IUser {
+public class User implements Serializable {
     @Id
     @Column(unique = true, nullable = false)
     private String email;
@@ -24,10 +24,6 @@ public class User implements IUser {
 
     private String password;
 
-    public Set<Integer> scores;
-
-    @Override
-    public int getScoreByCategory(String category) {
-        return 0;
-    }
+    @JdbcTypeCode(SqlTypes.JSON)
+    public Map<String, Integer> scores;
 }

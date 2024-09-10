@@ -8,7 +8,4 @@ import java.util.List;
 
 @Repository
 public interface IUserRepository extends JpaRepository<User, String> {
-    int getScoreByCategory(String category);
-
-    List<User> findByScoreTop100();
 }
