@@ -25,5 +25,8 @@ public class User implements Serializable {
     private String password;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    public Map<String, Integer> scores;
+    @Column(columnDefinition = "json", nullable = true)
+    private Map<String, Integer> scores;
+    
+    
 }
