@@ -6,7 +6,9 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,17 +18,15 @@ import java.util.Map;
 @Entity
 @Table(name = "users")
 public class User implements Serializable {
-    @Id
+	@Id
     @Column(unique = true, nullable = false)
     private String email;
 
-    public String pseudo;
-
+    private String pseudo;
     private String password;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "json", nullable = true)
-    private Map<String, Integer> scores;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Scores> scores = new HashSet<>();
     
     
 }

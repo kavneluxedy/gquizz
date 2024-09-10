@@ -1,5 +1,6 @@
 package com.dawan.gquizz;
 
+import com.dawan.gquizz.entities.Scores;
 import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.IUserRepository;
 
@@ -9,7 +10,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 
 @SpringBootApplication
@@ -26,26 +29,34 @@ public class GquizzApplication implements CommandLineRunner {
     
     @Override
     public void run(String... args) throws Exception {
-        // Créer un utilisateur
+    	// Créer un utilisateur
         User user = new User();
         user.setEmail("luc@gmail.com");
         user.setPseudo("Lucx67");
         user.setPassword("password123");
 
-        // Créer et attribuer des scores
-        Map<String, Integer> scores = new HashMap<>();
-        scores.put(CATEGORY.tv_cinema.name(), 100);
-        scores.put(CATEGORY.actu_politique.name(), 50);
-        scores.put(CATEGORY.art_litterature.name(), 20);
-        scores.put(CATEGORY.musique.name(), 60);
-        scores.put(CATEGORY.culture_generale.name(), 70);
-        scores.put(CATEGORY.sport.name(), 10);
-        
+        // Créer des scores pour chaque catégorie
+        Set<Scores> scores = new HashSet<>();
+        scores.add(createScore(user, "tv_cinema", 100));
+        scores.add(createScore(user, "art_litterature", 50));
+        scores.add(createScore(user, "musique", 75));
+        scores.add(createScore(user, "sport", 60));
+        scores.add(createScore(user, "politique", 80));
+        scores.add(createScore(user, "culture_generale", 90));
+
         user.setScores(scores);
 
-        // Sauvegarder l'utilisateur dans la base de données
+        // Sauvegarder l'utilisateur
         userRepository.save(user);
 
-        System.out.println("Utilisateur enregistré avec succès !");
+        System.out.println("Utilisateur avec scores enregistré avec succès !");
     }
-}
+
+    private Scores createScore(User user, String category, int scoreValue) {
+        Scores score = new Scores();
+        score.setUser(user);
+        score.setCategory(category);
+        score.setScore(scoreValue);
+        return score;
+    }
+ }
