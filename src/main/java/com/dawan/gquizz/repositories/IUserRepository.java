@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface IUserRepository extends JpaRepository<User, String> {
-    @Query(value = "SELECT score FROM Score s WHERE s.score > 1 ORDER BY s.score DESC")
-    public List<Integer> getBestScores();
+    @Query(value = "SELECT score FROM Score s WHERE s.category = :category ORDER BY s.score DESC LIMIT 10")
+
+    public List<Integer> getBestScoresByCategory(String category);
 }
