@@ -10,6 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -63,11 +64,11 @@ public class GquizzApplication implements CommandLineRunner {
         
         userRepository.save(user);
         userRepository.save(user2);
-        
-
         System.out.println("Utilisateur avec scores enregistré avec succès !");
 
-        System.out.println(userRepository.getBestScoresByCategory("sport"));
+
+        List<Score> resp = userRepository.findTopScoreByCategory("sport");
+        System.out.println(resp.get(0).getUser().getEmail() );
     }
 
     private Score createScore(User user, String category, int scoreValue) {

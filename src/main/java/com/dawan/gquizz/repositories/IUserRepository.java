@@ -5,11 +5,12 @@ import com.dawan.gquizz.entities.User;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface IUserRepository extends JpaRepository<User, String> {
-    @Query(value = "SELECT score FROM Score s WHERE s.category = :category ORDER BY s.score DESC LIMIT 10")
 
-    public List<Integer> getBestScoresByCategory(String category);
+    @Query(value = "SELECT s FROM Score s WHERE s.category = :category ORDER BY s.score DESC")
+    List<Score> findTopScoreByCategory(@Param("category") String category);
 }
