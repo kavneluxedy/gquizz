@@ -1,5 +1,7 @@
 package com.dawan.gquizz.dtos;
 
+import java.util.List;
+
 import lombok.*;
 
 @NoArgsConstructor
@@ -14,7 +16,7 @@ public class Quiz {
 
     public String answer;
 
-    public String[] badAnswers;
+    public List<String> badAnswers;
 
     public String category;
 
