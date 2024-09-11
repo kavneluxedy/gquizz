@@ -76,12 +76,6 @@ public class GquizzApplication implements CommandLineRunner {
         userRepository.save(user);
         userRepository.save(user2);
         System.out.println("Utilisateur avec scores enregistré avec succès !");
-
-
-        List<Score> resp = userRepository.findTopScoreByCategory("sport");
-        System.out.println(resp.get(0).getUser().getEmail());
-
-        for (String cat : userRepository.findAllCategory()) System.out.println(cat);
     }
 
     private Score createScore(User user, String category, int scoreValue) {

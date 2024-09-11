@@ -1,9 +1,16 @@
 package com.dawan.gquizz.services;
 
-import com.dawan.gquizz.dtos.QuestionDTO;
+import com.dawan.gquizz.dtos.Quiz;
+
+import java.util.List;
+import java.util.Set;
 
 public interface IQuestionService {
-    String generateRandomQuestionByCategory(String category);
+    Quiz getRandomQuestionByCategory(String category);
 
-    String generateRandomQuestion();
+    Quiz getRandomQuestion();
+
+    Set<Quiz> getQuiz();
+
+    Set<Quiz> getQuizByCategory(String category);
 }

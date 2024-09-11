@@ -1,12 +1,17 @@
 package com.dawan.gquizz.services;
 
+import com.dawan.gquizz.dtos.QuizzDTO;
+import com.dawan.gquizz.dtos.Quiz;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 public class QuestionServiceImpl implements IQuestionService {
+    private Random rng = new Random();
 
     private String API_URL = "https://quizzapi.jomoreschi.fr/api/v1/quiz";
 
@@ -14,25 +19,46 @@ public class QuestionServiceImpl implements IQuestionService {
     private RestTemplate restTemplate;
 
     @Override
-    public String generateRandomQuestion() {
-        try {
-            String resp = restTemplate.getForObject(API_URL, String.class);
-
-            System.out.println(resp);
-            return x[0];
-        } catch (RestClientException e) {
-            // Gérer l'exception
-            return "Erreur lors de l'appel à l'API : " + e.getMessage();
-        }
+    public Quiz getRandomQuestion() {
+        QuizzDTO response = restTemplate.getForObject(API_URL, QuizzDTO.class);
+        int count = response.count + 1;
+        return response.getQuizzes()[rng.nextInt(0, count)];
     }
 
     @Override
-    public String generateRandomQuestionByCategory(String category) {
-        try {
-            return restTemplate.getForObject(API_URL + "?category=" + category, String.class);
-        } catch (RestClientException e) {
-            // Gérer l'exception
-            return "Erreur lors de l'appel à l'API : " + e.getMessage();
+    public Quiz getRandomQuestionByCategory(String category) {
+        QuizzDTO response = restTemplate.getForObject(API_URL + "?category=" + category, QuizzDTO.class);
+        int count = response.count;
+        List<Quiz> questions = Arrays.stream(response.getQuizzes()).filter(quiz -> Objects.equals(quiz.getCategory(), category)).toList();
+        return questions.get(rng.nextInt(0, count));
+    }
+
+    @Override
+    public Set<Quiz> getQuiz() {
+        Set<Quiz> list = new HashSet<>();
+        List<Quiz> ignoredIds = new ArrayList<>();
+
+        while (list.size() < 10) {
+            var question = getRandomQuestion();
+            if (!list.contains(question)) {
+                list.add(question);
+            }
         }
+
+        return list;
+    }
+
+    @Override
+    public Set<Quiz> getQuizByCategory(String category) {
+        Set<Quiz> list = new HashSet<>();
+
+        while (list.size() < 10) {
+            var question = getRandomQuestionByCategory(category);
+            if (!list.contains(question)) {
+                list.add(question);
+            }
+        }
+
+        return list;
     }
 }

@@ -1,16 +1,15 @@
 package com.dawan.gquizz.controllers;
 
+import com.dawan.gquizz.dtos.Quiz;
 import com.dawan.gquizz.services.QuestionServiceImpl;
 import com.dawan.gquizz.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
-@Controller
+@RestController
 @RequestMapping("/api")
 public class MainController {
 
@@ -26,12 +25,22 @@ public class MainController {
     }
 
     @GetMapping(path = "/all", produces = "application/json")
-    public @ResponseBody String generateRandomQuestion() {
-        return questionService.generateRandomQuestion();
+    public @ResponseBody Quiz getRandomQuestion(@RequestParam(value = "count", required = false) Integer count) {
+        return questionService.getRandomQuestion();
     }
 
     @GetMapping(path = "/cat", produces = "application/json")
-    public @ResponseBody String generateRandomQuestionByCategory() {
-        return questionService.generateRandomQuestionByCategory("sport");
+    public @ResponseBody Quiz getRandomQuestionByCategory() {
+        return questionService.getRandomQuestionByCategory("sport");
+    }
+
+    @GetMapping(path = "/quiz", produces = "application/json")
+    public @ResponseBody Set<Quiz> getQuiz() {
+        return questionService.getQuiz();
+    }
+
+    @GetMapping(path = "/quiz/{category}", produces = "application/json")
+    public @ResponseBody Set<Quiz> getQuizByCategory(@PathVariable("category") String category) {
+        return questionService.getQuizByCategory(category);
     }
 }
