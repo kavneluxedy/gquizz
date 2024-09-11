@@ -3,12 +3,17 @@ package com.dawan.gquizz.services;
 import com.dawan.gquizz.entities.User;
 import org.springframework.stereotype.Service;
 
-@Service
+import java.util.List;
+import java.util.Optional;
+
 public interface IUserService {
-    void create(User user);
-    void update(String email, User user);
+    List<String> findAllCategory();
 
-    void update(User user);
+    Optional<User> getByEmail(String email) throws Exception;
 
-    void deleteById(String email);
+    void create(User user) throws Exception;
+
+    void update(String email, User user) throws Exception;
+
+    void deleteById(String email) throws Exception;
 }
