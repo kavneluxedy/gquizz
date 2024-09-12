@@ -13,7 +13,7 @@ public class JsonHelper {
         String jsonString = objectMapper.writeValueAsString(string);
 
         // Afficher la chaîne JSON
-        System.out.println(jsonString); // Sortie : "Bonjour tout le monde"
+        System.out.println(jsonString);
 
         return jsonString;
     }

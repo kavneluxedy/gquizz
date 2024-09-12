@@ -23,7 +23,7 @@ public class QuestionServiceImpl implements IQuestionService {
     @Override
     public Quiz getRandomQuestion() {
         QuizzDTO response = restTemplate.getForObject(API_URL, QuizzDTO.class);
-        int count = response.count + 1;
+        int count = response.count;
         return response.getQuizzes()[rng.nextInt(0, count)];
     }
 

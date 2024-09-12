@@ -21,9 +21,8 @@ public class LastQuizz {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Lob
-    @Column(length = Integer.MAX_VALUE, nullable = false)
-    private List<String> idQuestions;
+    @Column(nullable = false)
+    private String idQuestions;
 
     @OneToOne
     @JoinColumn(name = "user_email", nullable = false)

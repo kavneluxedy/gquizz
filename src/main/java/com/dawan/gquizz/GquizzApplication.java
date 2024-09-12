@@ -7,6 +7,7 @@ import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.IUserRepository;
 import com.dawan.gquizz.services.IQuestionService;
 
+import com.dawan.gquizz.utils.StringHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -91,7 +92,7 @@ public class GquizzApplication implements CommandLineRunner {
 		}
         
         lastQuizz.setUser(user);
-        lastQuizz.setIdQuestions(ids);
+        lastQuizz.setIdQuestions(StringHelper.convert(ids, ";"));
         user.setLastQuizz(lastQuizz);
 
         // Sauvegarder l'utilisateur
