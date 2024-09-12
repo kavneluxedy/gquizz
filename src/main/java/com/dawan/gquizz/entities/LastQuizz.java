@@ -1,18 +1,8 @@
 package com.dawan.gquizz.entities;
 
 import java.util.List;
-import java.util.Set;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,14 +16,16 @@ import lombok.Setter;
 @Entity
 @Table(name = "last_quizz")
 public class LastQuizz {
-	
-	@Id
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-	
-	private List<String> idQuestions;
 
-	@OneToOne
-	@JoinColumn(name = "user_email", nullable = false)
+    @Lob
+    @Column(length = Integer.MAX_VALUE, nullable = false)
+    private List<String> idQuestions;
+
+    @OneToOne
+    @JoinColumn(name = "user_email", nullable = false)
     private User user;
 }

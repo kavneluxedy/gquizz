@@ -30,9 +30,7 @@ public class QuizzService {
         return question;
     }
 	
-	public void saveLastQuizz(List<String> lastQuizz) {
-		
+	public void saveLastQuizz(LastQuizz lastQuizz) {
 		lastQuizzRepository.save(lastQuizz);
-
 	}
 }

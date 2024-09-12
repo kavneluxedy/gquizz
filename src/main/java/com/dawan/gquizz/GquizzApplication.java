@@ -6,7 +6,6 @@ import com.dawan.gquizz.entities.Score;
 import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.IUserRepository;
 import com.dawan.gquizz.services.IQuestionService;
-import com.dawan.gquizz.services.QuestionServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -38,12 +37,12 @@ public class GquizzApplication implements CommandLineRunner {
     @Autowired
     private IUserRepository userRepository;
 
+    @Autowired
+    private IQuestionService questionService;
+
     public static void main(String[] args) {
         SpringApplication.run(GquizzApplication.class, args);
     }
-    
-    @Autowired
-    private IQuestionService questionService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -82,13 +81,10 @@ public class GquizzApplication implements CommandLineRunner {
         user2.setScores(scores2);
         
         //Création lastQuizz
-        
         LastQuizz lastQuizz = new LastQuizz();
-        
         Set<Quiz> questions = questionService.getQuiz();
-        
         List<String> ids = new ArrayList<>();
-        
+
         for (Quiz quizz : questions) {
 			ids.add(quizz.get_id());
         	System.out.println(quizz.get_id());
@@ -96,12 +92,9 @@ public class GquizzApplication implements CommandLineRunner {
         
         lastQuizz.setUser(user);
         lastQuizz.setIdQuestions(ids);
-        
         user.setLastQuizz(lastQuizz);
-       
 
         // Sauvegarder l'utilisateur
-
         userRepository.save(user);
         userRepository.save(user2);
         System.out.println("Utilisateur avec scores enregistré avec succès !");
