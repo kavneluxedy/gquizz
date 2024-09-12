@@ -1,32 +1,39 @@
 package com.dawan.gquizz;
 
+import com.dawan.gquizz.dtos.Quiz;
+import com.dawan.gquizz.entities.LastQuizz;
 import com.dawan.gquizz.entities.Score;
 import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.IUserRepository;
+import com.dawan.gquizz.services.IQuestionService;
+import com.dawan.gquizz.services.QuestionServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 
 @SpringBootApplication
+
 public class GquizzApplication implements CommandLineRunner {
 
-    @Configuration
-    public class AppConfig {
-        @Bean
-        public RestTemplate restTemplate() {
-            return new RestTemplate();
-        }
-    }
+	@Configuration
+	public class Config {
+	     @Bean
+	     public RestTemplate restTemplate(RestTemplateBuilder builder) {
+	       return builder.build();
+	     }
+	}
 
     @Autowired
     private IUserRepository userRepository;
@@ -34,6 +41,9 @@ public class GquizzApplication implements CommandLineRunner {
     public static void main(String[] args) {
         SpringApplication.run(GquizzApplication.class, args);
     }
+    
+    @Autowired
+    private IQuestionService questionService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -70,6 +80,25 @@ public class GquizzApplication implements CommandLineRunner {
 
         user.setScores(scores);
         user2.setScores(scores2);
+        
+        //Création lastQuizz
+        
+        LastQuizz lastQuizz = new LastQuizz();
+        
+        Set<Quiz> questions = questionService.getQuiz();
+        
+        List<String> ids = new ArrayList<>();
+        
+        for (Quiz quizz : questions) {
+			ids.add(quizz.get_id());
+        	System.out.println(quizz.get_id());
+		}
+        
+        lastQuizz.setUser(user);
+        lastQuizz.setIdQuestions(ids);
+        
+        user.setLastQuizz(lastQuizz);
+       
 
         // Sauvegarder l'utilisateur
 

@@ -4,12 +4,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dawan.gquizz.dtos.Quiz;
+import com.dawan.gquizz.entities.LastQuizz;
+import com.dawan.gquizz.repositories.ILastQuizzRepository;
 
 @Service
 public class QuizzService {
+	@Autowired
+	
+	private ILastQuizzRepository lastQuizzRepository;
 	
 	public Quiz getQuestionById(String id) {
         
@@ -23,4 +29,10 @@ public class QuizzService {
 
         return question;
     }
+	
+	public void saveLastQuizz(List<String> lastQuizz) {
+		
+		lastQuizzRepository.save(lastQuizz);
+
+	}
 }
