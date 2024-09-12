@@ -12,9 +12,9 @@ import java.util.Optional;
 
 public interface IUserRepository extends JpaRepository<User, String> {
     @Override
-    Optional<User> findById(String user);
+    Optional<User> findById(String email);
 
-    @Query(value = "SELECT s FROM Score s WHERE s.category = :category ORDER BY s.score DESC")
+    @Query(value = "SELECT s FROM Score s WHERE s.category = :category ORDER BY s.bestScore DESC")
     List<Score> findTopScoreByCategory(@Param("category") String category);
 
     @Query("SELECT DISTINCT category FROM Score s") //TODO Call API Instead of DB

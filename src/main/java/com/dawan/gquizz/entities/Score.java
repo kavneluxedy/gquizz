@@ -22,8 +22,8 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "scores")
-public class Score implements Serializable{
-	@Id
+public class Score implements Serializable {
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -35,5 +35,5 @@ public class Score implements Serializable{
     private String category;
 
     @Column(nullable = false)
-    private int score;
+    private int bestScore;
 }

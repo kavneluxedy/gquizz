@@ -1,7 +1,6 @@
 package com.dawan.gquizz.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +14,6 @@ import com.dawan.gquizz.repositories.IUserRepository;
 import com.dawan.gquizz.services.QuizzService;
 
 @RestController
-@RequestMapping("/api/v1/quiz")
 public class QuizzController {
 
     @Autowired
@@ -24,8 +22,8 @@ public class QuizzController {
     @Autowired
     private IUserRepository userRepository;
 
-    @GetMapping("/question/{id}")
-    public void checkUserAnswerInConsole(@PathVariable String id, @RequestParam String userAnswer, @RequestParam String userEmail) {
+    @GetMapping("/answer/{id}")
+    public String checkUserAnswerInConsole(@PathVariable String id, @RequestParam String userAnswer, @RequestParam String userEmail) {
         // Récupère la question simulée
         Quiz question = quizzService.getQuestionById(id);
 
@@ -37,15 +35,13 @@ public class QuizzController {
         // Vérifie si l'utilisateur a donné la bonne réponse
         boolean isCorrect = userAnswer.equals(question.getAnswer());
 
-        
-
         if (isCorrect) {
-        	// Récupère l'utilisateur de la base de données
-        	User user = userRepository.findById(userEmail).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+            // Récupère l'utilisateur de la base de données
+            User user = userRepository.findById(userEmail).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
             System.out.println("Réponse correcte !");
-            
+
             // Ajoute +1 au score actuel de l'utilisateur
-            user.setCurrentScore(user.getCurrentScore() + 1);
+            user.setCurrentScore(user.getCurrentScore() + 50);
 
             // Sauvegarde l'utilisateur avec le score actuel mis à jour
             userRepository.save(user);
@@ -54,6 +50,7 @@ public class QuizzController {
         } else {
             System.out.println("Réponse incorrecte !");
         }
+        return "Coucou";
     }
 
 
@@ -61,7 +58,7 @@ public class QuizzController {
         Score newScore = new Score();
         newScore.setUser(user);
         newScore.setCategory(category);
-        newScore.setScore(1); // Initialise le score à 1 car la réponse est correcte
+        newScore.setBestScore(1); // Initialise le score à 1 car la réponse est correcte
         user.getScores().add(newScore);
         return newScore;
     }

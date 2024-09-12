@@ -13,13 +13,12 @@ import com.dawan.gquizz.repositories.ILastQuizzRepository;
 
 @Service
 public class QuizzService {
-	@Autowired
-	
-	private ILastQuizzRepository lastQuizzRepository;
-	
-	public Quiz getQuestionById(String id) {
-        
-		Quiz question = new Quiz();
+
+    @Autowired
+    private ILastQuizzRepository lastQuizzRepository;
+
+    public Quiz getQuestionById(String id) {
+        Quiz question = new Quiz();
         question.set_id("642438e068d7ea9aa9527847");
         question.setQuestion("En quelle année a été projeté le premier film ?");
         question.setAnswer("1895");
@@ -29,8 +28,8 @@ public class QuizzService {
 
         return question;
     }
-	
-	public void saveLastQuizz(LastQuizz lastQuizz) {
-		lastQuizzRepository.save(lastQuizz);
-	}
+
+    public void saveLastQuizz(LastQuizz lastQuizz) {
+        lastQuizzRepository.save(lastQuizz);
+    }
 }

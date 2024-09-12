@@ -27,13 +27,13 @@ import java.util.Set;
 
 public class GquizzApplication implements CommandLineRunner {
 
-	@Configuration
-	public class Config {
-	     @Bean
-	     public RestTemplate restTemplate(RestTemplateBuilder builder) {
-	       return builder.build();
-	     }
-	}
+    @Configuration
+    public class Config {
+        @Bean
+        public RestTemplate restTemplate(RestTemplateBuilder builder) {
+            return builder.build();
+        }
+    }
 
     @Autowired
     private IUserRepository userRepository;
@@ -80,19 +80,20 @@ public class GquizzApplication implements CommandLineRunner {
 
         user.setScores(scores);
         user2.setScores(scores2);
-        
+
         //Création lastQuizz
         LastQuizz lastQuizz = new LastQuizz();
         Set<Quiz> questions = questionService.getQuiz();
         List<String> ids = new ArrayList<>();
 
         for (Quiz quizz : questions) {
-			ids.add(quizz.get_id());
-        	System.out.println(quizz.get_id());
-		}
-        
+            ids.add(quizz.get_id());
+            System.out.println(quizz.get_id());
+        }
+
         lastQuizz.setUser(user);
         lastQuizz.setIdQuestions(StringHelper.convert(ids, ";"));
+        lastQuizz.setCategory("sport");
         user.setLastQuizz(lastQuizz);
 
         // Sauvegarder l'utilisateur
@@ -105,7 +106,7 @@ public class GquizzApplication implements CommandLineRunner {
         Score score = new Score();
         score.setUser(user);
         score.setCategory(category);
-        score.setScore(scoreValue);
+        score.setBestScore(scoreValue);
         return score;
     }
 }
