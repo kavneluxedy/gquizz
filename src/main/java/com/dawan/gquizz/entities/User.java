@@ -27,4 +27,7 @@ public class User implements Serializable {
     
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private LastQuizz lastQuizz;
+    
+    @Column(name = "current_score")
+    private int currentScore;
 }

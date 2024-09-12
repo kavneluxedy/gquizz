@@ -27,4 +27,5 @@ public class LastQuizz {
     @OneToOne
     @JoinColumn(name = "user_email", nullable = false)
     private User user;
+    
 }

@@ -37,30 +37,25 @@ public class QuizzController {
         // Vérifie si l'utilisateur a donné la bonne réponse
         boolean isCorrect = userAnswer.equals(question.getAnswer());
 
-        // Récupère l'utilisateur de la base de données
-        User user = userRepository.findById(userEmail).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        
 
         if (isCorrect) {
+        	// Récupère l'utilisateur de la base de données
+        	User user = userRepository.findById(userEmail).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
             System.out.println("Réponse correcte !");
+            
+            // Ajoute +1 au score actuel de l'utilisateur
+            user.setCurrentScore(user.getCurrentScore() + 1);
 
-            // Récupère ou crée le score actuel de la catégorie
-            String category = question.getCategory();
-            Score score = user.getScores().stream()
-                .filter(s -> s.getCategory().equals(category))
-                .findFirst()
-                .orElseGet(() -> createNewScore(user, category));
-
-            // Ajoute +1 au score pour cette catégorie
-            score.setScore(score.getScore() + 1);
-
-            // Sauvegarde l'utilisateur avec le score mis à jour
+            // Sauvegarde l'utilisateur avec le score actuel mis à jour
             userRepository.save(user);
 
-            System.out.println("Score mis à jour pour la catégorie " + category + ": " + score.getScore());
+            System.out.println("Score actuel mis à jour: " + user.getCurrentScore());
         } else {
             System.out.println("Réponse incorrecte !");
         }
     }
+
 
     private Score createNewScore(User user, String category) {
         Score newScore = new Score();
