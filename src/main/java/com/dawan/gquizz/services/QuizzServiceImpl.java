@@ -1,21 +1,19 @@
 package com.dawan.gquizz.services;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dawan.gquizz.dtos.Quiz;
 import com.dawan.gquizz.entities.LastQuizz;
-import com.dawan.gquizz.repositories.ILastQuizzRepository;
+import com.dawan.gquizz.repositories.LastQuizzRepository;
 
 @Service
-public class QuizzService {
+public class QuizzServiceImpl {
 
     @Autowired
-    private ILastQuizzRepository lastQuizzRepository;
+    private LastQuizzRepository lastQuizzRepository;
 
     public Quiz getQuestionById(String id) {
         Quiz question = new Quiz();

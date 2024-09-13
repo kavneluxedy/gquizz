@@ -2,6 +2,7 @@ package com.dawan.gquizz.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -11,7 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-
+@Accessors(chain = true)
 @Entity
 @Table(name = "users")
 public class User implements Serializable {
@@ -22,10 +23,10 @@ public class User implements Serializable {
     private String pseudo;
     private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user")
     private Set<Score> scores;
-    
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+
+    @OneToOne(mappedBy = "user")
     private LastQuizz lastQuizz;
     
     @Column(name = "current_score")

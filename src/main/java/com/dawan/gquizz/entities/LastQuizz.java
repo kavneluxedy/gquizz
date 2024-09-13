@@ -7,12 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-
+@Accessors(chain = true)
 @Entity
 @Table(name = "last_quizz")
 public class LastQuizz {
@@ -21,8 +22,8 @@ public class LastQuizz {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false)
-    private String idQuestions;
+    @ElementCollection
+    private List<String> idQuestions;
 
     @OneToOne
     @JoinColumn(name = "user_email", nullable = false)

@@ -4,10 +4,11 @@ import com.dawan.gquizz.dtos.Quiz;
 import com.dawan.gquizz.entities.LastQuizz;
 import com.dawan.gquizz.entities.Score;
 import com.dawan.gquizz.entities.User;
-import com.dawan.gquizz.repositories.IUserRepository;
+import com.dawan.gquizz.repositories.LastQuizzRepository;
+import com.dawan.gquizz.repositories.ScoreRepository;
+import com.dawan.gquizz.repositories.UserRepository;
 import com.dawan.gquizz.services.IQuestionService;
 
-import com.dawan.gquizz.utils.StringHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,7 +19,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,10 +36,16 @@ public class GquizzApplication implements CommandLineRunner {
     }
 
     @Autowired
-    private IUserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private IQuestionService questionService;
+
+    @Autowired
+    private LastQuizzRepository lastQuizzRepository;
+
+    @Autowired
+    private ScoreRepository scoreRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(GquizzApplication.class, args);
@@ -58,55 +64,24 @@ public class GquizzApplication implements CommandLineRunner {
         user2.setPseudo("DarkJean");
         user2.setPassword("1234");
 
-        userRepository.save(user);
-        userRepository.save(user2);
+        user = userRepository.save(user);
+        user2 = userRepository.save(user2);
 
-        // Créer des scores pour chaque catégorie
-        Set<Score> scores = new HashSet<>();
-        scores.add(createScore(user, "tv_cinema", 100));
-        scores.add(createScore(user, "art_litterature", 50));
-        scores.add(createScore(user, "musique", 75));
-        scores.add(createScore(user, "sport", 60));
-        scores.add(createScore(user, "actu_politique", 80));
-        scores.add(createScore(user, "culture_generale", 90));
-
-        Set<Score> scores2 = new HashSet<>();
-        scores2.add(createScore(user2, "tv_cinema", 100));
-        scores2.add(createScore(user2, "art_litterature", 50));
-        scores2.add(createScore(user2, "musique", 75));
-        scores2.add(createScore(user2, "sport", 60));
-        scores2.add(createScore(user2, "actu_politique", 80));
-        scores2.add(createScore(user2, "culture_generale", 90));
-
-        user.setScores(scores);
-        user2.setScores(scores2);
+        Score newScore = new Score().setUser(user2).setCategory("sport").setBestScore(250);
+        scoreRepository.save(newScore);
 
         //Création lastQuizz
-        LastQuizz lastQuizz = new LastQuizz();
-        Set<Quiz> questions = questionService.getQuiz();
-        List<String> ids = new ArrayList<>();
-
-        for (Quiz quizz : questions) {
-            ids.add(quizz.get_id());
-            System.out.println(quizz.get_id());
-        }
-
-        lastQuizz.setUser(user);
-        lastQuizz.setIdQuestions(StringHelper.convert(ids, ";"));
-        lastQuizz.setCategory("sport");
-        user.setLastQuizz(lastQuizz);
-
-        // Sauvegarder l'utilisateur
-        userRepository.save(user);
-        userRepository.save(user2);
-        System.out.println("Utilisateur avec scores enregistré avec succès !");
+        lastQuizzRepository.save(new LastQuizz()
+                .setIdQuestions(questionService.getQuiz().stream().map(Quiz::get_id).toList())
+                .setCategory("sport")
+                .setUser(user));
     }
 
-    private Score createScore(User user, String category, int scoreValue) {
+    private Score createScore(User user, String category, int bestScore) {
         Score score = new Score();
         score.setUser(user);
         score.setCategory(category);
-        score.setBestScore(scoreValue);
+        score.setBestScore(bestScore);
         return score;
     }
 }

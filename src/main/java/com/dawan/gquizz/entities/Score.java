@@ -14,12 +14,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-
+@Accessors(chain = true) // on all entities
 @Entity
 @Table(name = "scores")
 public class Score implements Serializable {

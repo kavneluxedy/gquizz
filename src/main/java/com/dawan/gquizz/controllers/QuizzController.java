@@ -3,24 +3,23 @@ package com.dawan.gquizz.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dawan.gquizz.dtos.Quiz;
 import com.dawan.gquizz.entities.Score;
 import com.dawan.gquizz.entities.User;
-import com.dawan.gquizz.repositories.IUserRepository;
-import com.dawan.gquizz.services.QuizzService;
+import com.dawan.gquizz.repositories.UserRepository;
+import com.dawan.gquizz.services.QuizzServiceImpl;
 
 @RestController
 public class QuizzController {
 
     @Autowired
-    private QuizzService quizzService;
+    private QuizzServiceImpl quizzService;
 
     @Autowired
-    private IUserRepository userRepository;
+    private UserRepository userRepository;
 
     @GetMapping("/answer/{id}")
     public String checkUserAnswerInConsole(@PathVariable String id, @RequestParam String userAnswer, @RequestParam String userEmail) {
