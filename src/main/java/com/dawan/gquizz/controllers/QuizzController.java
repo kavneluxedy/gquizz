@@ -5,7 +5,6 @@ import com.dawan.gquizz.entities.Score;
 import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.LastQuizzRepository;
 import com.dawan.gquizz.services.IQuestionService;
-import com.dawan.gquizz.utils.AnswerBody;
 import com.dawan.gquizz.utils.JsonHelper;
 import com.dawan.gquizz.utils.ScoreHelper;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -37,7 +36,7 @@ public class QuizzController {
     private LastQuizzRepository lastQuizzRepository;
 
     @PostMapping(value = "/answer", consumes = {"*/*"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Boolean> isUserAnswerValid(@JsonProperty("answer") String answer, @JsonProperty("email") String email, @JsonProperty("id") String id) throws Exception {
+    public ResponseEntity<String> isUserAnswerValid(@JsonProperty("answer") String answer, @JsonProperty("email") String email, @JsonProperty("id") String id) throws Exception {
         out.println("USER Answer : " + answer);
         out.println("ID Q : " + id);
         out.println("USER Email: " + email);
@@ -71,11 +70,12 @@ public class QuizzController {
             // Sauvegarde l'utilisateur avec le score actuel mis à jour
             userRepository.save(user);
             System.out.println("Score actuel mis à jour: " + user.getCurrentScore());
-            return new ResponseEntity<>(true, HttpStatus.OK);
-
+            return new ResponseEntity<>(JsonHelper.serialize("GOOD"), HttpStatus.OK);
+        } else if (answer.isEmpty()) {
+            throw new RuntimeException("Erreur avec la réponse proposée !");
         } else {
             System.out.println("Réponse incorrecte !");
-            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(JsonHelper.serialize("BAD"), HttpStatus.OK);
         }
     }
 }
