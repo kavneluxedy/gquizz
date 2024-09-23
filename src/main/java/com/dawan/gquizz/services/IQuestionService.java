@@ -1,16 +1,17 @@
 package com.dawan.gquizz.services;
 
-import com.dawan.gquizz.dtos.Quiz;
+import com.dawan.gquizz.dtos.QuestionDTO;
 
-import java.util.List;
 import java.util.Set;
 
 public interface IQuestionService {
-    Quiz getRandomQuestionByCategory(String category);
+    QuestionDTO getRandomQuestionByCategory(String category) throws Exception;
 
-    Quiz getRandomQuestion();
+    QuestionDTO getRandomQuestion() throws Exception;
 
-    Set<Quiz> getQuiz();
+    Set<QuestionDTO> getQuiz() throws Exception;
 
-    Set<Quiz> getQuizByCategory(String category);
+    Set<QuestionDTO> getQuizByCategory(String category) throws Exception;
+
+    QuestionDTO findById(String id) throws Exception;
 }

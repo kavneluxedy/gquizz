@@ -1,6 +1,6 @@
 package com.dawan.gquizz;
 
-import com.dawan.gquizz.dtos.Quiz;
+import com.dawan.gquizz.dtos.QuestionDTO;
 import com.dawan.gquizz.entities.LastQuizz;
 import com.dawan.gquizz.entities.Score;
 import com.dawan.gquizz.entities.User;
@@ -17,11 +17,6 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 
 @SpringBootApplication
 
@@ -53,35 +48,15 @@ public class GquizzApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Créer un utilisateur
-        User user = new User();
-        user.setEmail("luc@gmail.com");
-        user.setPseudo("Lucx67");
-        user.setPassword("password123");
-
-        User user2 = new User();
-        user2.setEmail("jean@gmail.com");
-        user2.setPseudo("DarkJean");
-        user2.setPassword("1234");
-
-        user = userRepository.save(user);
-        user2 = userRepository.save(user2);
-
-        Score newScore = new Score().setUser(user2).setCategory("sport").setBestScore(250);
-        scoreRepository.save(newScore);
-
-        //Création lastQuizz
-        lastQuizzRepository.save(new LastQuizz()
-                .setIdQuestions(questionService.getQuiz().stream().map(Quiz::get_id).toList())
-                .setCategory("sport")
-                .setUser(user));
-    }
-
-    private Score createScore(User user, String category, int bestScore) {
-        Score score = new Score();
-        score.setUser(user);
-        score.setCategory(category);
-        score.setBestScore(bestScore);
-        return score;
+//        User user = userRepository.save(new User().setEmail("luc@gmail.com").setPseudo("Lucx67").setPassword("password123"));
+//        User user2 = userRepository.save(new User().setEmail("jean@gmail.com").setPseudo("DarkJean").setPassword("1234"));
+//
+//        scoreRepository.save(new Score().setUser(user).setCategory("tv_cinema").setBestScore(120));
+//        scoreRepository.save(new Score().setUser(user2).setCategory("sport").setBestScore(250));
+//
+//        lastQuizzRepository.save(new LastQuizz()
+//                .setIdQuestions(questionService.getQuiz().stream().map(QuestionDTO::get_id).toList())
+//                .setCategory("sport")
+//                .setUser(user));
     }
 }

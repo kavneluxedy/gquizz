@@ -1,5 +1,6 @@
 package com.dawan.gquizz.repositories;
 
+import com.dawan.gquizz.dtos.QuestionDTO;
 import com.dawan.gquizz.entities.Score;
 import com.dawan.gquizz.entities.User;
 

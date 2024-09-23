@@ -2,6 +2,7 @@ package com.dawan.gquizz.dtos;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 @NoArgsConstructor
@@ -9,7 +10,7 @@ import lombok.*;
 @Data
 @Getter
 @Setter
-public class Quiz {
+public class QuestionDTO {
     public String _id;
 
     public String question;
@@ -21,4 +22,6 @@ public class Quiz {
     public String category;
 
     public String difficulty;
+
+    public List<String> allAnswers;
 }

@@ -1,6 +1,6 @@
 package com.dawan.gquizz.controllers;
 
-import com.dawan.gquizz.dtos.Quiz;
+import com.dawan.gquizz.dtos.QuestionDTO;
 import com.dawan.gquizz.services.QuestionServiceImpl;
 import com.dawan.gquizz.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,22 +25,22 @@ public class MainController {
     }
 
     @GetMapping(path = "/all", produces = "application/json")
-    public @ResponseBody Quiz getRandomQuestion(@RequestParam(value = "count", required = false) Integer count) {
+    public QuestionDTO getRandomQuestion(@RequestParam(value = "count", required = false) Integer count) throws Exception {
         return questionService.getRandomQuestion();
     }
 
     @GetMapping(path = "/cat", produces = "application/json")
-    public @ResponseBody Quiz getRandomQuestionByCategory() {
+    public QuestionDTO getRandomQuestionByCategory() throws Exception {
         return questionService.getRandomQuestionByCategory("sport");
     }
 
     @GetMapping(path = "/quiz", produces = "application/json")
-    public @ResponseBody Set<Quiz> getQuiz() {
+    public Set<QuestionDTO> getQuiz() throws Exception {
         return questionService.getQuiz();
     }
 
     @GetMapping(path = "/quiz/{category}", produces = "application/json")
-    public @ResponseBody Set<Quiz> getQuizByCategory(@PathVariable("category") String category) {
+    public Set<QuestionDTO> getQuizByCategory(@PathVariable("category") String category) throws Exception {
         return questionService.getQuizByCategory(category);
     }
 }
