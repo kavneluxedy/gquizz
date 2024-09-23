@@ -64,10 +64,10 @@ public class QuestionServiceImpl implements IQuestionService {
             if (!list.isEmpty()) {
                 if (!list.contains(question)) {
                     //TODO FIX NON-DISTINCTS
-                    System.out.println("le set ne contient pas de doublons");
+//                    System.out.println("le set ne contient pas de doublons");
                     list.add(question);
                 } else {
-                    System.out.println("le set contient des doublons");
+//                    System.out.println("le set contient des doublons");
                 }
             } else {
                 list.add(question);
