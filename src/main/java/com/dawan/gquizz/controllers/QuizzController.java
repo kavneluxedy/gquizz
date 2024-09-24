@@ -5,8 +5,8 @@ import com.dawan.gquizz.entities.Score;
 import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.LastQuizzRepository;
 import com.dawan.gquizz.services.IQuestionService;
+import com.dawan.gquizz.services.ScoreService;
 import com.dawan.gquizz.utils.AnswerBody;
-import com.dawan.gquizz.utils.JsonHelper;
 import com.dawan.gquizz.utils.ScoreHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.dawan.gquizz.repositories.UserRepository;
 import com.dawan.gquizz.services.QuizzServiceImpl;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static java.lang.System.*;
 
@@ -37,30 +37,42 @@ public class QuizzController {
     private UserRepository userRepository;
 
     @Autowired
+    private ScoreService scoreService;
+
+    @Autowired
     private LastQuizzRepository lastQuizzRepository;
+
+    @GetMapping("/{email}/{category}")
+    public ResponseEntity<Integer> startNewQuizz(@PathVariable String email) {
+        Optional<User> user = userRepository.findById(email).stream().findFirst();
+
+        if (user.isPresent()) {
+            user.get().setCurrentScore(0);
+            userRepository.saveAndFlush(user.get());
+            return new ResponseEntity<>(user.get().getCurrentScore(), HttpStatus.OK);
+        } else throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+    }
 
     @PostMapping(value = "/answer", consumes = {"*/*"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public Boolean isUserAnswerValid(@RequestBody AnswerBody body) throws Exception {
-        out.println("USER Answer : " + body.answer);
+//        out.println("USER Answer : " + body.answer);
         out.println("ID Q : " + body.id);
-        out.println("USER Email: " + body.email);
+//        out.println("USER Email: " + body.email);
 
         // Récupère l'utilisateur de la base de données
         User user = userRepository.findById(body.email).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-        String idQuestion = user.getLastQuizz().getIdQuestions().stream().filter(idQ -> idQ.equals(body.id)).toString();
-        System.out.println(idQuestion);
         QuestionDTO quiz = questionService.findById(body.id);
 
         // Affiche la question et les réponses dans la console
-        System.out.println("Question: " + quiz.getQuestion());
-        System.out.println("Bonne réponse: " + quiz.getAnswer());
-        System.out.println("Mauvaises réponses: " + String.join(", ", quiz.getBadAnswers()));
+//        System.out.println("Question: " + quiz.getQuestion());
+//        System.out.println("Bonne réponse: " + quiz.getAnswer());
+//        System.out.println("Mauvaises réponses: " + String.join(", ", quiz.getBadAnswers()));
 
         int currentCount = user.getLastQuizz().getIdQuestions().indexOf(body.id) + 1;
+        out.println(currentCount);
         if (currentCount >= 10) {
             Score newScore = ScoreHelper.createNewScore(user, user.getLastQuizz().getCategory());
-            System.out.println("Congratulations !!" + " ===> " + user.getCurrentScore() + "/" + currentCount);
-            // TODO Set New Score
+            scoreService.updateBestScore(body.email, quiz.getCategory(), user.getCurrentScore());
         }
 
         // Vérifie si l'utilisateur a donné la bonne réponse
@@ -71,28 +83,14 @@ public class QuizzController {
             user.setCurrentScore(user.getCurrentScore() + 1);
             // Sauvegarde l'utilisateur avec le score actuel mis à jour
             userRepository.save(user);
-            System.out.println("Score actuel mis à jour: " + user.getCurrentScore());
-            
+
+            System.out.println("FELICITATIONS !!" + " ===> " + user.getCurrentScore() + "/" + currentCount);
             return true;
         } else if (body.answer.isEmpty()) {
-            throw new RuntimeException("Erreur avec la réponse proposée !");
+            throw new HttpClientErrorException(HttpStatus.NO_CONTENT);
         } else {
             System.out.println("Réponse incorrecte !");
             return false;
         }
-    }
-
-    @GetMapping("/{email}/{category}")
-    public ResponseEntity<Integer> resetUserCurrentScore(@PathVariable String email, @PathVariable String category) { //resetUserCurrentScore = startNewQuiz
-        Optional<User> user = userRepository.findById(email).stream().findFirst();
-        if (user.isPresent()) {
-            user.ifPresent(user1 -> {
-                user1.setCurrentScore(0);
-                userRepository.saveAndFlush(user1);
-            });
-            out.println("RESET USER SCORE");
-            return new ResponseEntity<>(user.get().getCurrentScore(), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(0, HttpStatus.NOT_FOUND);
     }
 }

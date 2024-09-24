@@ -55,9 +55,4 @@ public class ScoreController {
         );
         return "Score processing completed";
     }
-
-    @GetMapping("/{email}/{category}")
-    public Score findByCategory(@PathVariable String email, @PathVariable String category) {
-        return scoreService.findByEmailAndCategory(email, category);
-    }
 }
