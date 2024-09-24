@@ -16,6 +16,7 @@ public class QuestionServiceImpl implements IQuestionService {
 
     private Random rng = new Random();
     private String API_URL = "https://quizzapi.jomoreschi.fr/api/v1/quiz";
+    private final int limit = 10;
 
     @Lazy
     @Autowired
@@ -53,32 +54,21 @@ public class QuestionServiceImpl implements IQuestionService {
 
         return list;
     }
+    
+        
 
     @Override
     public Set<QuestionDTO> getQuizByCategory(String category) throws Exception {
-        Set<QuestionDTO> list = new HashSet<>();
+    	
+        Set<QuestionDTO> uniqueQuestions = new HashSet<>(10);
+        //Set<String> blackList = new HashSet<>(); // Liste temporaire pour stocker les questions
 
-        while (list.size() < 10) {
-            QuestionDTO question = getRandomQuestionByCategory(category);
-
-            if (!list.isEmpty()) {
-                if (!list.contains(question)) {
-                    //TODO FIX NON-DISTINCTS
-//                    System.out.println("le set ne contient pas de doublons");
-                    list.add(question);
-                } else {
-//                    System.out.println("le set contient des doublons");
-                }
-            } else {
-                list.add(question);
-            }
-
-            List<String> allAnswers = new ArrayList<>(question.getBadAnswers());
-            allAnswers.add(question.getAnswer());
-            question.setAllAnswers(allAnswers);
-        }
-        return list;
+        QuizzDTO quizzByCategory = restTemplate.getForObject(API_URL + "?limit=" + limit + "?category=" + category  , QuizzDTO.class);
+        
+        
+        return Set.of(quizzByCategory.getQuizzes());
     }
+
 
     @Override
     public QuestionDTO findById(String id) throws Exception {
