@@ -15,12 +15,9 @@ import java.util.Set;
 @Table(name = "users")
 public class User extends BaseEntity {
 
+    private static final long serialVersionUID = -4136053344176968313L;
 
-	private static final long serialVersionUID = -4136053344176968313L;
-
-	//@Id
-    //@Column(unique = true, nullable = false)
-	//@AttributeOverride(name = "id", column = @Column(insertable = false, updatable = false))
+    @Column(unique = true, nullable = false)
     private String email;
 
     private String pseudo;
@@ -31,7 +28,7 @@ public class User extends BaseEntity {
 
     @OneToOne(mappedBy = "user")
     private LastQuizz lastQuizz;
-    
+
     @Column(name = "current_score")
     private int currentScore;
 }

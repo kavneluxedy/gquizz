@@ -74,6 +74,7 @@ public class QuizzController {
         if (currentCount >= 10) {
             Score newScore = ScoreHelper.createNewScore(user, user.getLastQuizz().getCategory());
             scoreService.updateBestScore(body.userId, quiz.getCategory(), user.getCurrentScore());
+            //TODO Reset Current Score after assign new Best Score
         }
 
         // Vérifie si l'utilisateur a donné la bonne réponse
