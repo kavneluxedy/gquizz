@@ -11,9 +11,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, String> {
+public interface UserRepository extends JpaRepository<User, Long> {
     @Override
-    Optional<User> findById(String email);
+    Optional<User> findById(Long id);
 
     @Query(value = "SELECT s FROM Score s WHERE s.category = :category ORDER BY s.bestScore DESC")
     List<Score> findTopScoreByCategory(@Param("category") String category);

@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
 
-import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -15,9 +13,14 @@ import java.util.Set;
 @Accessors(chain = true)
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
-	@Id
-    @Column(unique = true, nullable = false)
+public class User extends BaseEntity {
+
+
+	private static final long serialVersionUID = -4136053344176968313L;
+
+	//@Id
+    //@Column(unique = true, nullable = false)
+	//@AttributeOverride(name = "id", column = @Column(insertable = false, updatable = false))
     private String email;
 
     private String pseudo;

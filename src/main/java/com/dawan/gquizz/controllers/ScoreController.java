@@ -23,10 +23,10 @@ public class ScoreController {
     private ScoreService scoreService;
 
     @Transactional
-    @GetMapping("/{category}/{email}")
-    public String updateBestScore(@PathVariable String category, @PathVariable String email) {
+    @GetMapping("/{category}/{userId}")
+    public String updateBestScore(@PathVariable String category, @PathVariable Long userId) {
 
-        userRepository.findById(email).ifPresent(
+        userRepository.findById(userId).ifPresent(
                 user -> {
                     System.out.println("User found: " + user.getEmail());
 
@@ -56,7 +56,7 @@ public class ScoreController {
         return "Score processing completed";
     }
 
-    @GetMapping("/{email}/{category}")
+    @GetMapping("/{userId}/{category}")
     public Score findByCategory(@PathVariable String email, @PathVariable String category) {
         return scoreService.findByEmailAndCategory(email, category);
     }
