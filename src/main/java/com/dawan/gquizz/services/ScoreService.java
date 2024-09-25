@@ -26,7 +26,7 @@ public class ScoreService implements IScoreService {
     public List<Score> findByUserEmail(Long userId) {
         Optional<User> u = userRepository.findById(userId).stream().findFirst();
         if (u.isPresent()) {
-            return scoreRepository.findByUserEmail(userId);
+            return scoreRepository.findByUserId(userId);
         } else throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
     }
 
