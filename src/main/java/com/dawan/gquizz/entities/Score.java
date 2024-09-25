@@ -1,12 +1,9 @@
 package com.dawan.gquizz.entities;
 
-import java.io.Serializable;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -23,10 +20,13 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true) // on all entities
 @Entity
 @Table(name = "scores")
-public class Score implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Score extends BaseEntity {
+
+	private static final long serialVersionUID = 3739609421340440851L;
+
+	//@Id
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    //private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user_email", nullable = false)

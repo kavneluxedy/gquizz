@@ -42,21 +42,21 @@ public class QuizzController {
     @PostMapping(value = "/answer", consumes = {"*/*"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public Boolean isUserAnswerValid(@RequestBody AnswerBody body) throws Exception {
         out.println("USER Answer : " + body.answer);
-        out.println("ID Q : " + body.id);
-        out.println("USER Email: " + body.email);
+        out.println("ID Q : " + body.questionId);
+        out.println("USER Email: " + body.userId);
 
         // Récupère l'utilisateur de la base de données
-        User user = userRepository.findById(body.email).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-        String idQuestion = user.getLastQuizz().getIdQuestions().stream().filter(idQ -> idQ.equals(body.id)).toString();
+        User user = userRepository.findById(body.userId).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        String idQuestion = user.getLastQuizz().getIdQuestions().stream().filter(idQ -> idQ.equals(body.questionId)).toString();
         System.out.println(idQuestion);
-        QuestionDTO quiz = questionService.findById(body.id);
+        QuestionDTO quiz = questionService.findById(body.questionId);
 
         // Affiche la question et les réponses dans la console
         System.out.println("Question: " + quiz.getQuestion());
         System.out.println("Bonne réponse: " + quiz.getAnswer());
         System.out.println("Mauvaises réponses: " + String.join(", ", quiz.getBadAnswers()));
 
-        int currentCount = user.getLastQuizz().getIdQuestions().indexOf(body.id) + 1;
+        int currentCount = user.getLastQuizz().getIdQuestions().indexOf(body.questionId) + 1;
         if (currentCount >= 10) {
             Score newScore = ScoreHelper.createNewScore(user, user.getLastQuizz().getCategory());
             System.out.println("Congratulations !!" + " ===> " + user.getCurrentScore() + "/" + currentCount);
@@ -82,9 +82,9 @@ public class QuizzController {
         }
     }
 
-    @GetMapping("/{email}/{category}")
-    public ResponseEntity<Integer> resetUserCurrentScore(@PathVariable String email, @PathVariable String category) { //resetUserCurrentScore = startNewQuiz
-        Optional<User> user = userRepository.findById(email).stream().findFirst();
+    @GetMapping("/{userId}/{category}")
+    public ResponseEntity<Integer> resetUserCurrentScore(@PathVariable Long userId, @PathVariable String category) { //resetUserCurrentScore = startNewQuiz
+        Optional<User> user = userRepository.findById(userId).stream().findFirst();
         if (user.isPresent()) {
             user.ifPresent(user1 -> {
                 user1.setCurrentScore(0);

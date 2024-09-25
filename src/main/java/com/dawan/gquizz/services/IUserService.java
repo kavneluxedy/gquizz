@@ -9,11 +9,11 @@ import java.util.Optional;
 public interface IUserService {
     List<String> findAllCategory();
 
-    Optional<User> getByEmail(String email) throws Exception;
+    Optional<User> getById(Long userId) throws Exception;
 
     void create(User user) throws Exception;
 
-    void update(String email, User user) throws Exception;
+	void deleteById(Long userId) throws Exception;
 
-    void deleteById(String email) throws Exception;
+	void update(Long userId, User user) throws Exception;
 }
