@@ -3,10 +3,11 @@ package com.dawan.gquizz.services;
 import com.dawan.gquizz.dtos.ApiQuizDTO;
 import com.dawan.gquizz.dtos.QuizzDTO;
 import com.dawan.gquizz.dtos.QuestionDTO;
-import com.dawan.gquizz.utils.JsonHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -26,19 +27,25 @@ public class QuestionServiceImpl implements IQuestionService {
     public QuestionDTO getRandomQuestion() throws Exception {
         try {
             QuizzDTO response = restTemplate.getForObject(API_URL, QuizzDTO.class);
-            int count = response.getCount();
-            return response.getQuizzes()[rng.nextInt(0, count)];
+            if (response != null) {
+                int count = response.getCount();
+                return response.getQuizzes()[rng.nextInt(0, count)];
+            }
         } catch (Exception ex) {
-            throw ex;
+            throw new HttpClientErrorException(HttpStatus.FORBIDDEN);
         }
+        return null;
     }
 
     @Override
     public QuestionDTO getRandomQuestionByCategory(String category) throws Exception {
         QuizzDTO response = restTemplate.getForObject(API_URL + "?category=" + category, QuizzDTO.class);
-        int count = response.getCount();
-        List<QuestionDTO> questions = Arrays.stream(response.getQuizzes()).filter(quiz -> Objects.equals(quiz.getCategory(), category)).toList();
-        return questions.get(rng.nextInt(0, count));
+        if (response != null) {
+            int count = response.getCount();
+            List<QuestionDTO> questions = Arrays.stream(response.getQuizzes()).filter(quiz -> Objects.equals(quiz.getCategory(), category)).toList();
+            return questions.get(rng.nextInt(0, count));
+        }
+        return null;
     }
 
     @Override
@@ -59,14 +66,7 @@ public class QuestionServiceImpl implements IQuestionService {
 
     @Override
     public Set<QuestionDTO> getQuizByCategory(String category) throws Exception {
-    	
-        Set<QuestionDTO> uniqueQuestions = new HashSet<>(10);
-        //Set<String> blackList = new HashSet<>(); // Liste temporaire pour stocker les questions
-
-        QuizzDTO quizzByCategory = restTemplate.getForObject(API_URL + "?limit=" + limit + "?category=" + category  , QuizzDTO.class);
-        
-        
-        return Set.of(quizzByCategory.getQuizzes());
+        return Set.of((QuizzDTO) restTemplate.getForObject(API_URL + "?limit=" + limit + "?category=" + category  , QuizzDTO.class));
     }
 
 

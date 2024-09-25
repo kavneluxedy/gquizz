@@ -1,6 +1,5 @@
 package com.dawan.gquizz.repositories;
 
-import com.dawan.gquizz.dtos.QuestionDTO;
 import com.dawan.gquizz.entities.Score;
 import com.dawan.gquizz.entities.User;
 
@@ -13,7 +12,7 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     @Override
-    Optional<User> findById(Long id);
+    Optional<User> findById(Long userId);
 
     @Query(value = "SELECT s FROM Score s WHERE s.category = :category ORDER BY s.bestScore DESC")
     List<Score> findTopScoreByCategory(@Param("category") String category);

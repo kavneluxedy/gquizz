@@ -5,8 +5,8 @@ import com.dawan.gquizz.entities.Score;
 import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.LastQuizzRepository;
 import com.dawan.gquizz.services.IQuestionService;
+import com.dawan.gquizz.services.ScoreService;
 import com.dawan.gquizz.utils.AnswerBody;
-import com.dawan.gquizz.utils.JsonHelper;
 import com.dawan.gquizz.utils.ScoreHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.dawan.gquizz.repositories.UserRepository;
 import com.dawan.gquizz.services.QuizzServiceImpl;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static java.lang.System.*;
 
@@ -37,7 +37,21 @@ public class QuizzController {
     private UserRepository userRepository;
 
     @Autowired
+    private ScoreService scoreService;
+
+    @Autowired
     private LastQuizzRepository lastQuizzRepository;
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<String> startNewQuizz(@PathVariable Long userId) {
+        Optional<User> user = userRepository.findById(userId).stream().findFirst();
+
+        if (user.isPresent()) {
+            user.get().setCurrentScore(0);
+            userRepository.saveAndFlush(user.get());
+            return new ResponseEntity<>("Reset | Score de " + user.get().getPseudo() + ": " + user.get().getCurrentScore(), HttpStatus.OK);
+        } else throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+    }
 
     @PostMapping(value = "/answer", consumes = {"*/*"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public Boolean isUserAnswerValid(@RequestBody AnswerBody body) throws Exception {
@@ -52,15 +66,14 @@ public class QuizzController {
         QuestionDTO quiz = questionService.findById(body.questionId);
 
         // Affiche la question et les réponses dans la console
-        System.out.println("Question: " + quiz.getQuestion());
-        System.out.println("Bonne réponse: " + quiz.getAnswer());
-        System.out.println("Mauvaises réponses: " + String.join(", ", quiz.getBadAnswers()));
+//        System.out.println("Question: " + quiz.getQuestion());
+//        System.out.println("Bonne réponse: " + quiz.getAnswer());
+//        System.out.println("Mauvaises réponses: " + String.join(", ", quiz.getBadAnswers()));
 
         int currentCount = user.getLastQuizz().getIdQuestions().indexOf(body.questionId) + 1;
         if (currentCount >= 10) {
             Score newScore = ScoreHelper.createNewScore(user, user.getLastQuizz().getCategory());
-            System.out.println("Congratulations !!" + " ===> " + user.getCurrentScore() + "/" + currentCount);
-            // TODO Set New Score
+            scoreService.updateBestScore(body.userId, quiz.getCategory(), user.getCurrentScore());
         }
 
         // Vérifie si l'utilisateur a donné la bonne réponse
@@ -71,11 +84,11 @@ public class QuizzController {
             user.setCurrentScore(user.getCurrentScore() + 1);
             // Sauvegarde l'utilisateur avec le score actuel mis à jour
             userRepository.save(user);
-            System.out.println("Score actuel mis à jour: " + user.getCurrentScore());
-            
+
+            System.out.println("FELICITATIONS !!" + " ===> " + user.getCurrentScore() + "/" + currentCount);
             return true;
         } else if (body.answer.isEmpty()) {
-            throw new RuntimeException("Erreur avec la réponse proposée !");
+            throw new HttpClientErrorException(HttpStatus.NO_CONTENT);
         } else {
             System.out.println("Réponse incorrecte !");
             return false;

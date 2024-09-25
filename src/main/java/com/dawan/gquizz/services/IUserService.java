@@ -1,7 +1,6 @@
 package com.dawan.gquizz.services;
 
 import com.dawan.gquizz.entities.User;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
