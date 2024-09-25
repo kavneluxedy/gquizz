@@ -3,7 +3,6 @@ package com.dawan.gquizz.controllers;
 import com.dawan.gquizz.entities.Score;
 import com.dawan.gquizz.repositories.UserRepository;
 
-import com.dawan.gquizz.services.ScoreService;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +17,6 @@ public class ScoreController {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private ScoreService scoreService;
 
     @Transactional
     @GetMapping("/{category}/{userId}")
@@ -54,10 +50,5 @@ public class ScoreController {
                 }
         );
         return "Score processing completed";
-    }
-
-    @GetMapping("/{userId}/{category}")
-    public Score findByCategory(@PathVariable String email, @PathVariable String category) {
-        return scoreService.findByEmailAndCategory(email, category);
     }
 }
