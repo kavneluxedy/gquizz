@@ -42,37 +42,37 @@ public class QuizzController {
     @Autowired
     private LastQuizzRepository lastQuizzRepository;
 
-    @GetMapping("/{email}/{category}")
-    public ResponseEntity<Integer> startNewQuizz(@PathVariable String email) {
-        Optional<User> user = userRepository.findById(email).stream().findFirst();
+    @GetMapping("/{userId}")
+    public ResponseEntity<String> startNewQuizz(@PathVariable Long userId) {
+        Optional<User> user = userRepository.findById(userId).stream().findFirst();
 
         if (user.isPresent()) {
             user.get().setCurrentScore(0);
             userRepository.saveAndFlush(user.get());
-            return new ResponseEntity<>(user.get().getCurrentScore(), HttpStatus.OK);
+            return new ResponseEntity<>("Reset | Score de " + user.get().getPseudo() + ": " + user.get().getCurrentScore(), HttpStatus.OK);
         } else throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping(value = "/answer", consumes = {"*/*"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public Boolean isUserAnswerValid(@RequestBody AnswerBody body) throws Exception {
 //        out.println("USER Answer : " + body.answer);
-        out.println("ID Q : " + body.id);
-//        out.println("USER Email: " + body.email);
+//        out.println("ID Q : " + body.id);
+//        out.println("USER Email: " + body.userId);
 
         // Récupère l'utilisateur de la base de données
-        User user = userRepository.findById(body.email).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-        QuestionDTO quiz = questionService.findById(body.id);
+        User user = userRepository.findById(body.userId).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        QuestionDTO quiz = questionService.findById(body.questionId);
 
         // Affiche la question et les réponses dans la console
 //        System.out.println("Question: " + quiz.getQuestion());
 //        System.out.println("Bonne réponse: " + quiz.getAnswer());
 //        System.out.println("Mauvaises réponses: " + String.join(", ", quiz.getBadAnswers()));
 
-        int currentCount = user.getLastQuizz().getIdQuestions().indexOf(body.id) + 1;
+        int currentCount = user.getLastQuizz().getIdQuestions().indexOf(body.questionId) + 1;
         out.println(currentCount);
         if (currentCount >= 10) {
             Score newScore = ScoreHelper.createNewScore(user, user.getLastQuizz().getCategory());
-            scoreService.updateBestScore(body.email, quiz.getCategory(), user.getCurrentScore());
+            scoreService.updateBestScore(body.userId, quiz.getCategory(), user.getCurrentScore());
         }
 
         // Vérifie si l'utilisateur a donné la bonne réponse

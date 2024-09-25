@@ -43,14 +43,14 @@ public class MainController {
         return questionService.getRandomQuestionByCategory("sport");
     }
 
-    @GetMapping(path = "/quiz/{email}", produces = "application/json")
-    public Set<QuestionDTO> getQuiz(@PathVariable("email") String email) throws Exception {
-        lastQuizzRepository.findByUserEmail(email);
+    @GetMapping(path = "/quiz/{userId}", produces = "application/json")
+    public Set<QuestionDTO> getQuiz(@PathVariable Long userId) throws Exception {
+        lastQuizzRepository.findByUserId(userId);
         return questionService.getQuiz();
     }
 
-    @GetMapping(path = "/quiz/{email}/{category}", produces = "application/json")
-    public Set<QuestionDTO> getQuizByCategory(@PathVariable("category") String category, @PathVariable("email") String email) throws Exception {
+    @GetMapping(path = "/quiz/{userId}/{category}", produces = "application/json")
+    public Set<QuestionDTO> getQuizByCategory(@PathVariable Long userId, @PathVariable String category) throws Exception {
         Set<QuestionDTO> questions = questionService.getQuizByCategory(category);
 
         // Set new Id Questions to User
@@ -60,8 +60,8 @@ public class MainController {
             idQuestions.add(questionDTO.get_id());
         });
 
-        Optional<User> user = userService.getByEmail(email).stream().findFirst();
-        LastQuizz lq = lastQuizzRepository.findByUserEmail(email);
+        Optional<User> user = userService.getById(userId).stream().findFirst();
+        LastQuizz lq = lastQuizzRepository.findByUserId(userId);
         user.ifPresent(u -> lastQuizzRepository.saveAndFlush(lq.setCategory(category).setUser(u).setIdQuestions(idQuestions)));
 
         return questions;

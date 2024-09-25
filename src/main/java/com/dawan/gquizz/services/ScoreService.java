@@ -12,8 +12,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Stream;
 
 @Service
 public class ScoreService implements IScoreService {
@@ -25,20 +23,20 @@ public class ScoreService implements IScoreService {
     private UserRepository userRepository;
 
     @Override
-    public List<Score> findByUserEmail(String email) {
-        Optional<User> u = userRepository.findById(email).stream().findFirst();
+    public List<Score> findByUserEmail(Long userId) {
+        Optional<User> u = userRepository.findById(userId).stream().findFirst();
         if (u.isPresent()) {
-            return scoreRepository.findByUserEmail(email);
+            return scoreRepository.findByUserEmail(userId);
         } else throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
     }
 
-    public String updateBestScore(String email, String category, int currentScore) {
+    public String updateBestScore(Long userId, String category, int currentScore) {
         // set 1/3 field
         Score score = new Score().setCategory(category);
 
         Optional<Score> scoreStream = null;
-        Optional<User> u = userRepository.findById(email);
-        List<Score> scores = findByUserEmail(email);
+        Optional<User> u = userRepository.findById(userId);
+        List<Score> scores = findByUserEmail(userId);
 
         List<Score> scoreList = scores.stream().filter(s -> Objects.equals(s.getCategory(), category)).toList();
         System.out.println(scoreList);

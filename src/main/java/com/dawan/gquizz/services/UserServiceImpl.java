@@ -19,8 +19,8 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public Optional<User> getByEmail(String email) throws Exception {
-        Optional<User> user = userRepository.findById(email);
+    public Optional<User> getById(Long userId) throws Exception {
+        Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
             return null;
         }
@@ -33,8 +33,8 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void update(String email, User user) throws Exception {
-        Optional<User> u = getByEmail(email);
+    public void update(Long userId, User user) throws Exception {
+        Optional<User> u = getById(userId);
         if (u.isPresent()) {
             userRepository.saveAndFlush(user);
         } else {
@@ -43,7 +43,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void deleteById(String email) throws Exception {
-        userRepository.deleteById(email);
+    public void deleteById(Long userId) throws Exception {
+        userRepository.deleteById(userId);
     }
 }
