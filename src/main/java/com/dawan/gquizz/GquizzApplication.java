@@ -70,11 +70,11 @@ public class GquizzApplication implements CommandLineRunner {
         User user = userRepository.save(new User().setEmail("luc@gmail.com").setPseudo("Lucx67").setPassword("password123"));
         User user2 = userRepository.save(new User().setEmail("jean@gmail.com").setPseudo("DarkJean").setPassword("1234"));
         User user3 = userRepository.save(new User().setEmail("abc@def.com").setPseudo("Alpha-Bête").setPassword("GrouGrou"));
-        scoreRepository.save(new Score().setUser(user).setCategory(catSport).setBestScore(120));
-        scoreRepository.save(new Score().setUser(user2).setCategory(catSport).setBestScore(999));
-        scoreRepository.save(new Score().setUser(user3).setCategory(catMusique).setBestScore(150));
+        scoreRepository.save(new Score().setUser(user).setCategory(catSport).setBestScore(1));
+        //scoreRepository.save(new Score().setUser(user2).setCategory(catSport).setBestScore(999));
+        //scoreRepository.save(new Score().setUser(user3).setCategory(catMusique).setBestScore(150));
 
-        lastQuizzRepository.save(new LastQuizz()
+       /* lastQuizzRepository.save(new LastQuizz()
                 .setIdQuestions(questionService.getQuizByCategory("jeux_videos").stream().map(QuestionDTO::get_id).toList())
                 .setCategory(catJeuxVideos)
                 .setUser(userRepository.findById(1L).get()));
@@ -86,8 +86,7 @@ public class GquizzApplication implements CommandLineRunner {
 
         lastQuizzRepository.save(new LastQuizz()
                 .setIdQuestions(questionService.getQuizByCategory("tv_cinema").stream().map(QuestionDTO::get_id).toList())
-                .setCategory(catTvCinema)
-                .setUser(userRepository.findById(3L).get()));
+                .setCategory(catTvCinema)*/
 //
 //        System.out.println(scoreRepository.countByUserId(user2.getId()));
 //        System.out.println(scoreRepository.existsByUserIdAndCategoryId(user2.getId(), categoryRepository.findById(1L).get().getId()));

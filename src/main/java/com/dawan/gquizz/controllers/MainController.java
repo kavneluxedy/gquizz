@@ -6,6 +6,7 @@ import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.CategoryRepository;
 import com.dawan.gquizz.repositories.LastQuizzRepository;
 import com.dawan.gquizz.repositories.UserRepository;
+import com.dawan.gquizz.services.LastQuizzServiceImpl;
 import com.dawan.gquizz.services.QuestionServiceImpl;
 import com.dawan.gquizz.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ public class MainController {
 
     @Autowired
     private CategoryRepository categoryRepository;
+    
+    @Autowired
+    private LastQuizzServiceImpl lastQuizzService;
 
     @GetMapping(path = "/showCategories")
     public List<String> showCategories() {
@@ -60,19 +64,44 @@ public class MainController {
     @GetMapping(path = "/quiz/{userId}/{categoryLabel}", produces = "application/json")
     public Set<QuestionDTO> getQuizByCategory(@PathVariable Long userId, @PathVariable String categoryLabel) throws Exception {
         Set<QuestionDTO> questions = questionService.getQuizByCategory(categoryLabel);
-
+        System.out.println(userId);
         // Set new Id Questions to User
         List<String> idQuestions = new ArrayList<>();
         questions.forEach(questionDTO -> {
             System.out.println(questionDTO.get_id());
             idQuestions.add(questionDTO.get_id());
         });
-
-        User user = userService.getById(userId);
-        lastQuizzRepository.save(new LastQuizz()
-                .setCategory(categoryRepository.findByLabel(categoryLabel))
-                .setUser(user)
-                .setIdQuestions(idQuestions));
+        
+        try {
+			       
+	        LastQuizz lastQuizz= lastQuizzRepository.findByUserId(userId);
+	        
+	        
+	        User user = userService.getById(userId);
+	        
+	        LastQuizz newLastQuiz = new LastQuizz()
+	                .setCategory(categoryRepository.findByLabel(categoryLabel))
+	                .setUser(user)
+	                .setIdQuestions(idQuestions);
+	        
+	        
+	        LastQuizz newLastQuizz = lastQuizz
+	                .setCategory(categoryRepository.findByLabel(categoryLabel))
+	                .setUser(user)
+	                .setIdQuestions(idQuestions);
+	                
+	        if(lastQuizz == null) {
+	        	lastQuizzRepository.save(newLastQuiz);
+	        }
+	        else {
+	        	lastQuizzRepository.saveAndFlush(newLastQuizz);
+	        }
+	        
+        } catch (Exception e) {
+			// TODO: handle exception
+        	throw new Exception(e);
+		}
+        //lastQuizzService.update(lastQuizz.getId(), 
 
         return questions;
     }
