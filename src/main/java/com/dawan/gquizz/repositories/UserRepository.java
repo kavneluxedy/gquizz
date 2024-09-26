@@ -13,11 +13,4 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     @Override
     Optional<User> findById(Long userId);
-
-    @Query(value = "SELECT s FROM Score s WHERE s.category = :category ORDER BY s.bestScore DESC")
-    List<Score> findTopScoreByCategory(@Param("category") String category);
-
-    @Query("SELECT DISTINCT category FROM Score s")
-        //TODO Call API Instead of DB
-    List<String> findAllCategory();
 }

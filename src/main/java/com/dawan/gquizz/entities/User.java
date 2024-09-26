@@ -21,9 +21,10 @@ public class User extends BaseEntity {
     private String email;
 
     private String pseudo;
+
     private String password;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<Score> scores;
 
     @OneToOne(mappedBy = "user")

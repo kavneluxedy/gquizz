@@ -1,13 +1,11 @@
 package com.dawan.gquizz.controllers;
 
 import com.dawan.gquizz.dtos.QuestionDTO;
-import com.dawan.gquizz.entities.Score;
 import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.LastQuizzRepository;
 import com.dawan.gquizz.services.IQuestionService;
 import com.dawan.gquizz.services.ScoreService;
 import com.dawan.gquizz.utils.AnswerBody;
-import com.dawan.gquizz.utils.ScoreHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,40 +40,18 @@ public class QuizzController {
     @Autowired
     private LastQuizzRepository lastQuizzRepository;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<String> startNewQuizz(@PathVariable Long userId) {
-        Optional<User> user = userRepository.findById(userId).stream().findFirst();
-
-        if (user.isPresent()) {
-            user.get().setCurrentScore(0);
-            userRepository.saveAndFlush(user.get());
-            return new ResponseEntity<>("Reset | Score de " + user.get().getPseudo() + ": " + user.get().getCurrentScore(), HttpStatus.OK);
-        } else throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
-    }
-
     @PostMapping(value = "/answer", consumes = {"*/*"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public Boolean isUserAnswerValid(@RequestBody AnswerBody body) throws Exception {
-        out.println("USER Answer : " + body.answer);
-        out.println("ID Q : " + body.questionId);
-        out.println("USER Email: " + body.userId);
 
         // Récupère l'utilisateur de la base de données
         User user = userRepository.findById(body.userId).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-        String idQuestion = user.getLastQuizz().getIdQuestions().stream().filter(idQ -> idQ.equals(body.questionId)).toString();
-        System.out.println(idQuestion);
+        String idQuestion = user.getLastQuizz().getIdQuestions().stream().findFirst().filter(idQ -> idQ.equals(body.questionId)).toString();
+        System.out.println("BUG " + idQuestion);
         QuestionDTO quiz = questionService.findById(body.questionId);
 
-        // Affiche la question et les réponses dans la console
-//        System.out.println("Question: " + quiz.getQuestion());
-//        System.out.println("Bonne réponse: " + quiz.getAnswer());
-//        System.out.println("Mauvaises réponses: " + String.join(", ", quiz.getBadAnswers()));
-
         int currentCount = user.getLastQuizz().getIdQuestions().indexOf(body.questionId) + 1;
-        if (currentCount >= 10) {
-            Score newScore = ScoreHelper.createNewScore(user, user.getLastQuizz().getCategory());
-            scoreService.updateBestScore(body.userId, quiz.getCategory(), user.getCurrentScore());
-            //TODO Reset Current Score after assign new Best Score
-        }
+
+        checkQuizzFinished(body.userId, currentCount, user);
 
         // Vérifie si l'utilisateur a donné la bonne réponse
         if (body.answer.equals(quiz.getAnswer())) {
@@ -96,17 +72,23 @@ public class QuizzController {
         }
     }
 
+    private void checkQuizzFinished(Long userId, int currentCount, User user) {
+        if (currentCount >= 10) {
+            scoreService.updateBestScore(userId, 1L);//TODO fix
+        }
+    }
+
     @GetMapping("/{userId}/{category}")
-    public ResponseEntity<Integer> resetUserCurrentScore(@PathVariable Long userId, @PathVariable String category) { //resetUserCurrentScore = startNewQuiz
+    public ResponseEntity<String> startNewQuizz(@PathVariable Long userId, @PathVariable String category) { //resetUserCurrentScore = startNewQuiz
         Optional<User> user = userRepository.findById(userId).stream().findFirst();
         if (user.isPresent()) {
             user.ifPresent(user1 -> {
                 user1.setCurrentScore(0);
-                userRepository.saveAndFlush(user1);
+                userRepository.save(user1);
             });
-            out.println("RESET USER SCORE");
-            return new ResponseEntity<>(user.get().getCurrentScore(), HttpStatus.OK);
+
+            return new ResponseEntity<>("Reset Current Score of " + user.get().getPseudo(), HttpStatus.OK);
         }
-        return new ResponseEntity<>(0, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
     }
 }

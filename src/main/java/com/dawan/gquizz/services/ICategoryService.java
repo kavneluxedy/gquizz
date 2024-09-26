@@ -1,4 +1,5 @@
 package com.dawan.gquizz.services;
 
-public interface IScoreService {
+public interface ICategoryService {
+
 }

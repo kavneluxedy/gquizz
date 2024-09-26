@@ -18,7 +18,6 @@ import lombok.experimental.Accessors;
 @Table(name = "last_quizz")
 public class LastQuizz extends BaseEntity{
 
-
 	private static final long serialVersionUID = 3470336777702835412L;
 
 	//@Id
@@ -29,8 +28,9 @@ public class LastQuizz extends BaseEntity{
     private List<String> idQuestions;
 
     @OneToOne
-    @JoinColumn(name = "user_email", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private String category;
+    @OneToOne
+    private Category category;
 }

@@ -15,14 +15,15 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public List<String> findAllCategory() {
-        return userRepository.findAllCategory();
+        return List.of();
     }
 
     @Override
-    public Optional<User> getById(Long userId) throws Exception {
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isEmpty()) {
-            return null;
+    public User getById(Long userId) throws Exception {
+        Optional<User> u = userRepository.findById(userId);
+        User user = null;
+        if (u.isPresent()) {
+            user = u.get();
         }
         return user;
     }
@@ -34,8 +35,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public void update(Long userId, User user) throws Exception {
-        Optional<User> u = getById(userId);
-        if (u.isPresent()) {
+        if (getById(userId) != null) {
             userRepository.saveAndFlush(user);
         } else {
             create(user);

@@ -1,12 +1,6 @@
 package com.dawan.gquizz.entities;
 
-
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,18 +16,15 @@ import lombok.experimental.Accessors;
 @Table(name = "scores")
 public class Score extends BaseEntity {
 
-	private static final long serialVersionUID = 3739609421340440851L;
-
-	//@Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    //private Long id;
+    private static final long serialVersionUID = 3739609421340440851L;
 
     @ManyToOne
-    @JoinColumn(name = "user_email", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false)
-    private String category;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @Column(nullable = false)
     private int bestScore;

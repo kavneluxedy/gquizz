@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface IUserService {
     List<String> findAllCategory();
 
-    Optional<User> getById(Long userId) throws Exception;
+    User getById(Long userId) throws Exception;
 
     void create(User user) throws Exception;
 

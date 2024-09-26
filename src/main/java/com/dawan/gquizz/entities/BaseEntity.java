@@ -1,8 +1,9 @@
 package com.dawan.gquizz.entities;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
+import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedDate;
 
 import jakarta.persistence.GeneratedValue;
@@ -18,7 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-
+@Accessors(chain = true)
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
 
@@ -32,8 +33,6 @@ public abstract class BaseEntity implements Serializable {
     private int version;
     
     @CreatedDate
-    private LocalDate localDate;
-
-
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
 
