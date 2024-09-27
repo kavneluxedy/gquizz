@@ -73,6 +73,7 @@ public class QuestionServiceImpl implements IQuestionService {
 
             allAnswers.add(questionDTO.getAnswer()); // ["Roi 1"]
             allAnswers.addAll(questionDTO.getBadAnswers()); // ["Roi 1", "Roi 2", "Roi 3", "Roi 4", ]
+            Collections.shuffle(allAnswers);
             questionDTO.setAllAnswers(allAnswers);
         });
 
