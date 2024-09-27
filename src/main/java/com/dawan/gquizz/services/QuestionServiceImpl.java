@@ -18,7 +18,7 @@ public class QuestionServiceImpl implements IQuestionService {
 
     private Random rng = new Random();
     private String API_URL = "https://quizzapi.jomoreschi.fr/api/v1/quiz";
-    private final int limit = 10;
+    private final static int LIMIT = 10;
 
     @Lazy
     @Autowired
@@ -65,7 +65,7 @@ public class QuestionServiceImpl implements IQuestionService {
 
     @Override
     public Set<QuestionDTO> getQuizByCategory(String category) throws Exception {
-        QuizzDTO quizzByCategory = restTemplate.getForObject(API_URL + "?limit=" + limit + "?category=" + category, QuizzDTO.class);
+        QuizzDTO quizzByCategory = restTemplate.getForObject(API_URL + "?limit=" + LIMIT + "?category=" + category, QuizzDTO.class);
         Set<QuestionDTO> questions = Arrays.stream(quizzByCategory.getQuizzes()).collect(Collectors.toSet());
 
         questions.forEach(questionDTO -> {
@@ -81,8 +81,8 @@ public class QuestionServiceImpl implements IQuestionService {
     }
 
     @Override
-    public QuestionDTO findById(String id) throws Exception {
-        ApiQuizDTO response = restTemplate.getForObject(API_URL + "/" + id, ApiQuizDTO.class);
+    public QuestionDTO findById(String idQuestion) throws Exception {
+        ApiQuizDTO response = restTemplate.getForObject(API_URL + "/" + idQuestion, ApiQuizDTO.class);
         if (response != null) return response.getQuiz();
         return null;
     }

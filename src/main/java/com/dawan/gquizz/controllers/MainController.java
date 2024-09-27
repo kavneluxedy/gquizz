@@ -6,6 +6,7 @@ import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.CategoryRepository;
 import com.dawan.gquizz.repositories.LastQuizzRepository;
 import com.dawan.gquizz.repositories.UserRepository;
+import com.dawan.gquizz.services.LastQuizzServiceImpl;
 import com.dawan.gquizz.services.QuestionServiceImpl;
 import com.dawan.gquizz.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ public class MainController {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private LastQuizzServiceImpl lastQuizzService;
+
     @GetMapping(path = "/showCategories")
     public List<String> showCategories() {
         return userService.findAllCategory();
@@ -61,19 +65,23 @@ public class MainController {
     public Set<QuestionDTO> getQuizByCategory(@PathVariable Long userId, @PathVariable String categoryLabel) throws Exception {
         Set<QuestionDTO> questions = questionService.getQuizByCategory(categoryLabel);
 
-        // Set new Id Questions to User
+        // Set new id questions to lastQuizz
         List<String> idQuestions = new ArrayList<>();
-        questions.forEach(questionDTO -> {
-            System.out.println(questionDTO.get_id());
-            idQuestions.add(questionDTO.get_id());
-        });
+        questions.forEach(questionDTO -> idQuestions.add(questionDTO.get_id()));
 
-        User user = userService.getById(userId);
-        lastQuizzRepository.save(new LastQuizz()
-                .setCategory(categoryRepository.findByLabel(categoryLabel))
-                .setUser(user)
-                .setIdQuestions(idQuestions));
+        Optional<User> optUser = userRepository.findById(userId);
+        User user = null;
 
+        if (optUser.isPresent()) {
+            user = optUser.get();
+            LastQuizz lq = lastQuizzRepository.findByUserId(user.getId());
+
+            if (lq == null) {
+                lastQuizzRepository.save(new LastQuizz().setCategory(categoryRepository.findByLabel(categoryLabel)).setUser(user).setIdQuestions(idQuestions));
+            } else {
+                lastQuizzRepository.saveAndFlush(lq.setCategory(categoryRepository.findByLabel(categoryLabel)).setUser(user).setIdQuestions(idQuestions));
+            }
+        }
         return questions;
     }
 }

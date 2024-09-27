@@ -1,10 +1,11 @@
 package com.dawan.gquizz.controllers;
 
 import com.dawan.gquizz.dtos.QuestionDTO;
+import com.dawan.gquizz.entities.LastQuizz;
 import com.dawan.gquizz.entities.User;
+import com.dawan.gquizz.repositories.CategoryRepository;
 import com.dawan.gquizz.repositories.LastQuizzRepository;
-import com.dawan.gquizz.services.IQuestionService;
-import com.dawan.gquizz.services.ScoreService;
+import com.dawan.gquizz.services.*;
 import com.dawan.gquizz.utils.AnswerBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,12 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.dawan.gquizz.repositories.UserRepository;
-import com.dawan.gquizz.services.QuizzServiceImpl;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Optional;
-
-import static java.lang.System.*;
 
 @RestController
 @CrossOrigin
@@ -40,18 +38,31 @@ public class QuizzController {
     @Autowired
     private LastQuizzRepository lastQuizzRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     @PostMapping(value = "/answer", consumes = {"*/*"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public Boolean isUserAnswerValid(@RequestBody AnswerBody body) throws Exception {
 
         // Récupère l'utilisateur de la base de données
-        User user = userRepository.findById(body.userId).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-        String idQuestion = user.getLastQuizz().getIdQuestions().stream().findFirst().filter(idQ -> idQ.equals(body.questionId)).toString();
-        System.out.println("BUG " + idQuestion);
+        Optional<User> u = userRepository.findById(body.userId);
         QuestionDTO quiz = questionService.findById(body.questionId);
+        User user = null;
+        LastQuizz lq = null;
 
-        int currentCount = user.getLastQuizz().getIdQuestions().indexOf(body.questionId) + 1;
+        if (u.isPresent()) {
+            lq = u.get().getLastQuizz();
+            user = u.get();
+        } else {
+            //TODO Proposer de créer un compte à l'utilisateur (pop-up de redirection)
+        }
 
-        checkQuizzFinished(body.userId, currentCount, user);
+        if (lq == null)
+            lq = lastQuizzRepository.save(new LastQuizz().setUser(user).setCategory(categoryRepository.findByLabel(quiz.getCategory()).setLabel(quiz.getCategory())));
+
+        int currentCount = lq.getIdQuestions().indexOf(body.questionId) + 1;
+
+        System.out.println("================>: " + currentCount);
 
         // Vérifie si l'utilisateur a donné la bonne réponse
         if (body.answer.equals(quiz.getAnswer())) {
@@ -60,26 +71,32 @@ public class QuizzController {
             // Ajoute +1 au score actuel de l'utilisateur
             user.setCurrentScore(user.getCurrentScore() + 1);
             // Sauvegarde l'utilisateur avec le score actuel mis à jour
-            userRepository.save(user);
+            userRepository.saveAndFlush(user);
 
-            System.out.println("FELICITATIONS !!" + " ===> " + user.getCurrentScore() + "/" + currentCount);
             return true;
+
         } else if (body.answer.isEmpty()) {
             throw new HttpClientErrorException(HttpStatus.NO_CONTENT);
+
         } else {
             System.out.println("Réponse incorrecte !");
-            return false;
         }
+
+        System.out.println("Fin de quizz !!" + " Votre score ===> " + user.getCurrentScore() + "/" + currentCount);
+
+        return Boolean.TRUE.equals(isQuizzFinished(user, currentCount));
     }
 
-    private void checkQuizzFinished(Long userId, int currentCount, User user) {
+    private Boolean isQuizzFinished(User user, int currentCount) {
         if (currentCount >= 10) {
-            scoreService.updateBestScore(userId, 1L);//TODO fix
+            scoreService.updateBestScore(user.getId(), user.getLastQuizz().getCategory().getId());
+            return true;
         }
+        return false;
     }
 
-    @GetMapping("/{userId}/{category}")
-    public ResponseEntity<String> startNewQuizz(@PathVariable Long userId, @PathVariable String category) { //resetUserCurrentScore = startNewQuiz
+    @GetMapping("/{userId}")
+    public ResponseEntity<String> startNewQuizz(@PathVariable Long userId) { //resetUserCurrentScore = startNewQuiz
         Optional<User> user = userRepository.findById(userId).stream().findFirst();
         if (user.isPresent()) {
             user.ifPresent(user1 -> {
