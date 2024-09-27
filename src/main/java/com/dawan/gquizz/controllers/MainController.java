@@ -36,7 +36,7 @@ public class MainController {
 
     @Autowired
     private CategoryRepository categoryRepository;
-    
+
     @Autowired
     private LastQuizzServiceImpl lastQuizzService;
 
@@ -64,45 +64,24 @@ public class MainController {
     @GetMapping(path = "/quiz/{userId}/{categoryLabel}", produces = "application/json")
     public Set<QuestionDTO> getQuizByCategory(@PathVariable Long userId, @PathVariable String categoryLabel) throws Exception {
         Set<QuestionDTO> questions = questionService.getQuizByCategory(categoryLabel);
-        System.out.println(userId);
-        // Set new Id Questions to User
-        List<String> idQuestions = new ArrayList<>();
-        questions.forEach(questionDTO -> {
-            System.out.println(questionDTO.get_id());
-            idQuestions.add(questionDTO.get_id());
-        });
-        
-        try {
-			       
-	        LastQuizz lastQuizz= lastQuizzRepository.findByUserId(userId);
-	        
-	        
-	        User user = userService.getById(userId);
-	        
-	        LastQuizz newLastQuiz = new LastQuizz()
-	                .setCategory(categoryRepository.findByLabel(categoryLabel))
-	                .setUser(user)
-	                .setIdQuestions(idQuestions);
-	        
-	        
-	        LastQuizz newLastQuizz = lastQuizz
-	                .setCategory(categoryRepository.findByLabel(categoryLabel))
-	                .setUser(user)
-	                .setIdQuestions(idQuestions);
-	                
-	        if(lastQuizz == null) {
-	        	lastQuizzRepository.save(newLastQuiz);
-	        }
-	        else {
-	        	lastQuizzRepository.saveAndFlush(newLastQuizz);
-	        }
-	        
-        } catch (Exception e) {
-			// TODO: handle exception
-        	throw new Exception(e);
-		}
-        //lastQuizzService.update(lastQuizz.getId(), 
 
+        // Set new id questions to lastQuizz
+        List<String> idQuestions = new ArrayList<>();
+        questions.forEach(questionDTO -> idQuestions.add(questionDTO.get_id()));
+
+        Optional<User> optUser = userRepository.findById(userId);
+        User user = null;
+
+        if (optUser.isPresent()) {
+            user = optUser.get();
+            LastQuizz lq = lastQuizzRepository.findByUserId(user.getId());
+
+            if (lq == null) {
+                lastQuizzRepository.save(new LastQuizz().setCategory(categoryRepository.findByLabel(categoryLabel)).setUser(user).setIdQuestions(idQuestions));
+            } else {
+                lastQuizzRepository.saveAndFlush(lq.setCategory(categoryRepository.findByLabel(categoryLabel)).setUser(user).setIdQuestions(idQuestions));
+            }
+        }
         return questions;
     }
 }
