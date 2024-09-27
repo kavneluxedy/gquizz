@@ -45,22 +45,6 @@ public class MainController {
         return userService.findAllCategory();
     }
 
-    @GetMapping(path = "/all", produces = "application/json")
-    public QuestionDTO getRandomQuestion(@RequestParam(value = "count", required = false) Integer count) throws Exception {
-        return questionService.getRandomQuestion();
-    }
-
-    @GetMapping(path = "/cat", produces = "application/json")
-    public QuestionDTO getRandomQuestionByCategory() throws Exception {
-        return questionService.getRandomQuestionByCategory("sport");
-    }
-
-    @GetMapping(path = "/quiz/{userId}", produces = "application/json")
-    public Set<QuestionDTO> getQuiz(@PathVariable Long userId) throws Exception {
-        lastQuizzRepository.findByUserId(userId);
-        return questionService.getQuiz();
-    }
-
     @GetMapping(path = "/quiz/{userId}/{categoryLabel}", produces = "application/json")
     public Set<QuestionDTO> getQuizByCategory(@PathVariable Long userId, @PathVariable String categoryLabel) throws Exception {
         Set<QuestionDTO> questions = questionService.getQuizByCategory(categoryLabel);
@@ -83,5 +67,21 @@ public class MainController {
             }
         }
         return questions;
+    }
+
+    @GetMapping(path = "/all", produces = "application/json")
+    public QuestionDTO getRandomQuestion(@RequestParam(value = "count", required = false) Integer count) throws Exception {
+        return questionService.getRandomQuestion();
+    }
+
+    @GetMapping(path = "/cat", produces = "application/json")
+    public QuestionDTO getRandomQuestionByCategory() throws Exception {
+        return questionService.getRandomQuestionByCategory("sport");
+    }
+
+    @GetMapping(path = "/quiz/{userId}", produces = "application/json")
+    public Set<QuestionDTO> getQuiz(@PathVariable Long userId) throws Exception {
+        lastQuizzRepository.findByUserId(userId);
+        return questionService.getQuiz();
     }
 }
