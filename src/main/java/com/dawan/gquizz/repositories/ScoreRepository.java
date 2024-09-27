@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ScoreRepository extends JpaRepository<Score, Long> {
     @Query("SELECT s FROM Score s WHERE s.id = :id ORDER BY s.bestScore DESC")
@@ -15,5 +16,5 @@ public interface ScoreRepository extends JpaRepository<Score, Long> {
 
     Long countByUserId(@Param("userId") Long userId);
 
-    Score findOneByUser_IdAndCategory_Id(@Param("userId") Long userId, @Param("categoryId") Long categoryId);
+    Optional<Score> findOneByUser_IdAndCategory_Id(@Param("userId") Long userId, @Param("categoryId") Long categoryId);
 }

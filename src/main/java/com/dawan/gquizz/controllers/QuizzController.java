@@ -89,7 +89,10 @@ public class QuizzController {
 
     private Boolean isQuizzFinished(User user, int currentCount) {
         if (currentCount >= 10) {
-            scoreService.updateBestScore(user.getId(), user.getLastQuizz().getCategory().getId());
+            // Yanis
+            System.out.println(user.getCurrentScore());
+
+            scoreService.updateBestScore(user);
             return true;
         }
         return false;
