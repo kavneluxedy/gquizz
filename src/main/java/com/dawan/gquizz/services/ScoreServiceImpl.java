@@ -6,15 +6,11 @@ import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.CategoryRepository;
 import com.dawan.gquizz.repositories.ScoreRepository;
 import com.dawan.gquizz.repositories.UserRepository;
-import com.dawan.gquizz.utils.ScoreHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
-import java.util.Optional;
-
 @Service
-public class ScoreService implements IScoreService {
+public class ScoreServiceImpl implements IScoreService {
 
     @Autowired
     private ScoreRepository scoreRepository;
@@ -25,7 +21,7 @@ public class ScoreService implements IScoreService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public String updateBestScore(User user) {
+    public void updateBestScore(User user) {
         Category cat = user.getLastQuizz().getCategory();
         int currentScore = user.getCurrentScore();
 
@@ -79,6 +75,5 @@ public class ScoreService implements IScoreService {
                 scoreRepository.saveAndFlush(newScore);
             }
         }*/
-        return "Vous n'avez pas battu votre meilleur score";
     }
 }

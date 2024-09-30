@@ -1,8 +1,6 @@
 package com.dawan.gquizz;
 
-import com.dawan.gquizz.dtos.QuestionDTO;
 import com.dawan.gquizz.entities.Category;
-import com.dawan.gquizz.entities.LastQuizz;
 import com.dawan.gquizz.entities.Score;
 import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.CategoryRepository;
@@ -11,7 +9,7 @@ import com.dawan.gquizz.repositories.ScoreRepository;
 import com.dawan.gquizz.repositories.UserRepository;
 import com.dawan.gquizz.services.IQuestionService;
 
-import com.dawan.gquizz.services.ScoreService;
+import com.dawan.gquizz.services.ScoreServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -49,7 +47,7 @@ public class GquizzApplication implements CommandLineRunner {
     private CategoryRepository categoryRepository;
 
     @Autowired
-    private ScoreService scoreService;
+    private ScoreServiceImpl scoreService;
 
     public static void main(String[] args) {
         SpringApplication.run(GquizzApplication.class, args);

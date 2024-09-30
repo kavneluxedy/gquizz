@@ -14,11 +14,6 @@ public class UserServiceImpl implements IUserService {
     public UserRepository userRepository;
 
     @Override
-    public List<String> findAllCategory() {
-        return List.of();
-    }
-
-    @Override
     public User getById(Long userId) throws Exception {
         Optional<User> u = userRepository.findById(userId);
         User user = null;

@@ -33,7 +33,7 @@ public class QuizzController {
     private UserRepository userRepository;
 
     @Autowired
-    private ScoreService scoreService;
+    private ScoreServiceImpl scoreService;
 
     @Autowired
     private LastQuizzRepository lastQuizzRepository;
@@ -57,6 +57,8 @@ public class QuizzController {
             //TODO Proposer de créer un compte à l'utilisateur (pop-up de redirection)
         }
 
+        //TODO Gérer la validation de réponse pour un utilisateur non-authentifié
+        // Car lq.getIdQuestions is null si pas de user authentifié
         if (lq == null)
             lq = lastQuizzRepository.save(new LastQuizz().setUser(user).setCategory(categoryRepository.findByLabel(quiz.getCategory()).setLabel(quiz.getCategory())));
 

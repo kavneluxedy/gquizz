@@ -1,11 +1,13 @@
 package com.dawan.gquizz.controllers;
 
 import com.dawan.gquizz.dtos.QuestionDTO;
+import com.dawan.gquizz.entities.Category;
 import com.dawan.gquizz.entities.LastQuizz;
 import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.CategoryRepository;
 import com.dawan.gquizz.repositories.LastQuizzRepository;
 import com.dawan.gquizz.repositories.UserRepository;
+import com.dawan.gquizz.services.CategoryServiceImpl;
 import com.dawan.gquizz.services.LastQuizzServiceImpl;
 import com.dawan.gquizz.services.QuestionServiceImpl;
 import com.dawan.gquizz.services.UserServiceImpl;
@@ -38,34 +40,41 @@ public class MainController {
     private CategoryRepository categoryRepository;
 
     @Autowired
+    private CategoryServiceImpl categoryService;
+
+    @Autowired
     private LastQuizzServiceImpl lastQuizzService;
 
-    @GetMapping(path = "/showCategories")
-    public List<String> showCategories() {
-        return userService.findAllCategory();
+    @GetMapping(path = "/allCategories")
+    public List<Category> showCategories() {
+        return categoryService.findAllCategories();
     }
 
-    @GetMapping(path = "/quiz/{userId}/{categoryLabel}", produces = "application/json")
-    public Set<QuestionDTO> getQuizByCategory(@PathVariable Long userId, @PathVariable String categoryLabel) throws Exception {
+    @GetMapping(path = "/quiz/{categoryLabel}", produces = "application/json")
+    public Set<QuestionDTO> getAuthQuizByCategory(@PathVariable String categoryLabel) throws Exception {
+        return questionService.getQuizByCategory(categoryLabel);
+    }
+
+    @GetMapping(path = "/quiz/{categoryLabel}/{userId}", produces = "application/json")
+    public Set<QuestionDTO> getAuthQuizByCategory(@PathVariable String categoryLabel, @PathVariable Long userId) throws Exception {
         Set<QuestionDTO> questions = questionService.getQuizByCategory(categoryLabel);
 
-        // Set new id questions to lastQuizz
+        // Set new id questions to user's lastQuizz
         List<String> idQuestions = new ArrayList<>();
         questions.forEach(questionDTO -> idQuestions.add(questionDTO.get_id()));
 
         Optional<User> optUser = userRepository.findById(userId);
-        User user = null;
-
         if (optUser.isPresent()) {
-            user = optUser.get();
-            LastQuizz lq = lastQuizzRepository.findByUserId(user.getId());
+            User user = optUser.get();
 
-            if (lq == null) {
-                lastQuizzRepository.save(new LastQuizz().setCategory(categoryRepository.findByLabel(categoryLabel)).setUser(user).setIdQuestions(idQuestions));
-            } else {
-                lastQuizzRepository.saveAndFlush(lq.setCategory(categoryRepository.findByLabel(categoryLabel)).setUser(user).setIdQuestions(idQuestions));
-            }
+            lastQuizzRepository.findByUserId(user.getId()).map(lastQuizz -> {
+                lastQuizzRepository.save(lastQuizz.setCategory(categoryRepository.findByLabel(categoryLabel)).setUser(user).setIdQuestions(idQuestions));
+                return lastQuizz;
+            }).orElseGet(() -> lastQuizzRepository.save(new LastQuizz().setCategory(categoryRepository.findByLabel(categoryLabel)).setUser(user).setIdQuestions(idQuestions)));
+        } else {
+            throw new RuntimeException("Vous n'avez pas de compte ! Créez en un pour exposer votre score au monde entier");
         }
+
         return questions;
     }
 
@@ -79,9 +88,8 @@ public class MainController {
         return questionService.getRandomQuestionByCategory("sport");
     }
 
-    @GetMapping(path = "/quiz/{userId}", produces = "application/json")
-    public Set<QuestionDTO> getQuiz(@PathVariable Long userId) throws Exception {
-        lastQuizzRepository.findByUserId(userId);
+    @GetMapping(path = "/quiz", produces = "application/json")
+    public Set<QuestionDTO> getQuiz() throws Exception {
         return questionService.getQuiz();
     }
 }
