@@ -1,5 +1,9 @@
 package com.dawan.gquizz.services;
 
-public interface ICategoryService {
+import com.dawan.gquizz.entities.Category;
 
+import java.util.List;
+
+public interface ICategoryService {
+    List<Category> findAllCategories();
 }
