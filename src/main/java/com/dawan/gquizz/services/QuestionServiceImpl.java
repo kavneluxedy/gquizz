@@ -65,7 +65,7 @@ public class QuestionServiceImpl implements IQuestionService {
 
     @Override
     public Set<QuestionDTO> getQuizByCategory(String category) throws Exception {
-        QuizzDTO quizzByCategory = restTemplate.getForObject(API_URL + "?limit=" + LIMIT + "?category=" + category, QuizzDTO.class);
+        QuizzDTO quizzByCategory = restTemplate.getForObject(API_URL + "?limit=" + LIMIT + "&category=" + category, QuizzDTO.class);
         Set<QuestionDTO> questions = Arrays.stream(quizzByCategory.getQuizzes()).collect(Collectors.toSet());
 
         questions.forEach(questionDTO -> {
