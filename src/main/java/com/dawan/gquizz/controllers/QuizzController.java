@@ -69,7 +69,6 @@ public class QuizzController {
         // Car lq.getIdQuestions is null si pas de user authentifié
         if (lq == null)
             lq = lastQuizzRepository.save(new LastQuizz().setUser(user).setCategory(categoryRepository.findByLabel(quiz.getCategory()).setLabel(quiz.getCategory())));
-        }
 
         int currentCount = lq.getIdQuestions().indexOf(body.questionId) + 1;
         System.out.println("================>: " + currentCount);
@@ -84,9 +83,7 @@ public class QuizzController {
             return ResponseEntity.ok(true);
 
         } else if (body.answer.isEmpty()) {
-
             throw new HttpClientErrorException(HttpStatus.NO_CONTENT);
-
         } else {
             System.out.println("Réponse incorrecte !");
         }
@@ -94,7 +91,9 @@ public class QuizzController {
         System.out.println("Fin de quizz !!" + " Votre score ===> " + user.getCurrentScore() + "/" + currentCount);
 
         // Contrôle si le quiz est terminé
-        return ResponseEntity.ok(Boolean.TRUE.equals(isQuizzFinished(user, currentCount)));
+        return ResponseEntity.ok(Boolean.TRUE.equals(
+
+                isQuizzFinished(user, currentCount)));
     }
 
     private Boolean isQuizzFinished(User user, int currentCount) {
