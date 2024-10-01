@@ -51,12 +51,12 @@ public class MainController {
     }
 
     @GetMapping(path = "/quiz/{categoryLabel}", produces = "application/json")
-    public Set<QuestionDTO> getAuthQuizByCategory(@PathVariable String categoryLabel) throws Exception {
+    public Set<QuestionDTO> getQuizByCategory(@PathVariable String categoryLabel) throws Exception {
         return questionService.getQuizByCategory(categoryLabel);
     }
 
-    @GetMapping(path = "/quiz/{categoryLabel}/{userId}", produces = "application/json")
-    public Set<QuestionDTO> getAuthQuizByCategory(@PathVariable String categoryLabel, @PathVariable Long userId) throws Exception {
+    @GetMapping(path = "/quiz/{userId}/{categoryLabel}", produces = "application/json")
+    public Set<QuestionDTO> getQuizByCategory(@PathVariable Long userId, @PathVariable String categoryLabel) throws Exception {
         Set<QuestionDTO> questions = questionService.getQuizByCategory(categoryLabel);
 
         // Set new id questions to user's lastQuizz
