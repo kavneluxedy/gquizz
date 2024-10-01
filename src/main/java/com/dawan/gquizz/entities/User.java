@@ -32,4 +32,7 @@ public class User extends BaseEntity {
 
     @Column(name = "current_score")
     private int currentScore;
+    
+    //Pour spring security
+    private String role;
 }

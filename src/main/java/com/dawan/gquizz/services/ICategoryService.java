@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ICategoryService {
 
-    List<Category> findAllCategories() throws Exception;
+    List<Category> findAllCategories();
 }

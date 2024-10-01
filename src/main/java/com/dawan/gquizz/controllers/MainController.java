@@ -45,8 +45,8 @@ public class MainController {
     @Autowired
     private LastQuizzServiceImpl lastQuizzService;
 
-    @GetMapping(path = "/allCategories")
-    public List<Category> showCategories() {
+    @GetMapping(path = "/getAllCategories")
+    public List<Category> getAllCategories() {
         return categoryService.findAllCategories();
     }
 
@@ -61,7 +61,10 @@ public class MainController {
 
         // Set new id questions to user's lastQuizz
         List<String> idQuestions = new ArrayList<>();
-        questions.forEach(questionDTO -> idQuestions.add(questionDTO.get_id()));
+        questions.forEach(questionDTO -> {
+            System.out.println(questionDTO.get_id());
+            idQuestions.add(questionDTO.get_id());
+        });
 
         Optional<User> optUser = userRepository.findById(userId);
         if (optUser.isPresent()) {

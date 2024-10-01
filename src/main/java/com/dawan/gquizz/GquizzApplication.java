@@ -24,7 +24,7 @@ import org.springframework.web.client.RestTemplate;
 public class GquizzApplication implements CommandLineRunner {
 
     @Configuration
-    public class Config {
+    public static class Config {
         @Bean
         public RestTemplate restTemplate(RestTemplateBuilder builder) {
             return builder.build();

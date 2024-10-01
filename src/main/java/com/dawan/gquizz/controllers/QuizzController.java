@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import com.dawan.gquizz.repositories.UserRepository;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -42,42 +44,47 @@ public class QuizzController {
     private CategoryRepository categoryRepository;
 
     @PostMapping(value = "/answer", consumes = {"*/*"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Boolean isUserAnswerValid(@RequestBody AnswerBody body) throws Exception {
+    public ResponseEntity<Object> isUserAnswerValid(@RequestBody AnswerBody body) throws Exception {
 
-        // Récupère l'utilisateur de la base de données
+        // Récupere l'utilisateur 
         Optional<User> u = userRepository.findById(body.userId);
         QuestionDTO quiz = questionService.findById(body.questionId);
         User user = null;
         LastQuizz lq = null;
 
+        // Contrôle si l'utilisateur existe
         if (u.isPresent()) {
-            lq = u.get().getLastQuizz();
             user = u.get();
+            lq = user.getLastQuizz();
         } else {
-            //TODO Proposer de créer un compte à l'utilisateur (pop-up de redirection)
+            // Si l'utilisateur n'est pas trouvé propose de créer un compte
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Utilisateur non trouvé. Est-ce que vous voulez créer un compte?");
+            response.put("redirectUrl", "/create-account");
+
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
         //TODO Gérer la validation de réponse pour un utilisateur non-authentifié
         // Car lq.getIdQuestions is null si pas de user authentifié
         if (lq == null)
             lq = lastQuizzRepository.save(new LastQuizz().setUser(user).setCategory(categoryRepository.findByLabel(quiz.getCategory()).setLabel(quiz.getCategory())));
+        }
 
         int currentCount = lq.getIdQuestions().indexOf(body.questionId) + 1;
-
         System.out.println("================>: " + currentCount);
 
-        // Vérifie si l'utilisateur a donné la bonne réponse
+        // Contrôle si la reponse se l'utilisateur est correcte
         if (body.answer.equals(quiz.getAnswer())) {
             System.out.println("Réponse correcte !");
 
-            // Ajoute +1 au score actuel de l'utilisateur
             user.setCurrentScore(user.getCurrentScore() + 1);
-            // Sauvegarde l'utilisateur avec le score actuel mis à jour
             userRepository.saveAndFlush(user);
 
-            return true;
+            return ResponseEntity.ok(true);
 
         } else if (body.answer.isEmpty()) {
+
             throw new HttpClientErrorException(HttpStatus.NO_CONTENT);
 
         } else {
@@ -86,14 +93,12 @@ public class QuizzController {
 
         System.out.println("Fin de quizz !!" + " Votre score ===> " + user.getCurrentScore() + "/" + currentCount);
 
-        return Boolean.TRUE.equals(isQuizzFinished(user, currentCount));
+        // Contrôle si le quiz est terminé
+        return ResponseEntity.ok(Boolean.TRUE.equals(isQuizzFinished(user, currentCount)));
     }
 
     private Boolean isQuizzFinished(User user, int currentCount) {
         if (currentCount >= 10) {
-            // Yanis
-            System.out.println(user.getCurrentScore());
-
             scoreService.updateBestScore(user);
             return true;
         }
@@ -102,15 +107,11 @@ public class QuizzController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<String> startNewQuizz(@PathVariable Long userId) { //resetUserCurrentScore = startNewQuiz
-        Optional<User> user = userRepository.findById(userId).stream().findFirst();
-        if (user.isPresent()) {
-            user.ifPresent(user1 -> {
-                user1.setCurrentScore(0);
-                userRepository.save(user1);
-            });
-
-            return new ResponseEntity<>("Reset Current Score of " + user.get().getPseudo(), HttpStatus.OK);
-        }
-        return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        Optional<User> user = userRepository.findById(userId);
+        return user.map(u -> {
+            u.setCurrentScore(0);
+            userRepository.save(u);
+            return new ResponseEntity<>("Reset Current Score de l'utilisateur " + u.getPseudo(), HttpStatus.OK);
+        }).orElseGet(() -> new ResponseEntity<>("Utilisateur non trouvé ", HttpStatus.NOT_FOUND));
     }
 }
