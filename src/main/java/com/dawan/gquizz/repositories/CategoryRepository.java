@@ -11,7 +11,5 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     long count();
 
-    List<Category> findAll();
-
     Category findByLabel(String label);
 }
