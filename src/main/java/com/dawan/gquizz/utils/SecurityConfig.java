@@ -26,9 +26,9 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-	
+
 	private final CustomUserDetailsService userDetailsService;
-	
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -46,15 +46,16 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.authorizeHttpRequests(authorize ->
-                authorize.requestMatchers("/login").permitAll().anyRequest().permitAll()).build();
+        return http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(authorize ->
+                authorize.requestMatchers("/login").permitAll()
+                        .anyRequest().permitAll()).build();
     }
 
-	@Bean
-	public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder passwordEncoder) throws Exception {
-		AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-		authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
-		
-		return authenticationManagerBuilder.build();
-	}
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder passwordEncoder) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+
+        return authenticationManagerBuilder.build();
+    }
 }

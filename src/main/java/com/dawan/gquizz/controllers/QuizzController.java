@@ -67,11 +67,7 @@ public class QuizzController {
 
         // Si l'utilisateur n'a pas un dernier quiz, il en crée un et le sauvegarde
         if (lq == null) {
-            lq = lastQuizzRepository.save(
-                new LastQuizz()
-                    .setUser(user)
-                    .setCategory(categoryRepository.findByLabel(quiz.getCategory()).setLabel(quiz.getCategory()))
-            );
+            lq = lastQuizzRepository.save(new LastQuizz().setUser(user).setCategory(categoryRepository.findByLabel(quiz.getCategory()).setLabel(quiz.getCategory())));
         }
 
         int currentCount = lq.getIdQuestions().indexOf(body.questionId) + 1;
@@ -80,14 +76,14 @@ public class QuizzController {
         // Contrôle si la reponse se l'utilisateur est correcte
         if (body.answer.equals(quiz.getAnswer())) {
             System.out.println("Réponse correcte !");
-            
+
             user.setCurrentScore(user.getCurrentScore() + 1);
-            userRepository.saveAndFlush(user); 
+            userRepository.saveAndFlush(user);
 
             return ResponseEntity.ok(true);
 
         } else if (body.answer.isEmpty()) {
-         
+
             throw new HttpClientErrorException(HttpStatus.NO_CONTENT);
 
         } else {
@@ -97,16 +93,11 @@ public class QuizzController {
         System.out.println("Fin de quizz !!" + " Votre score ===> " + user.getCurrentScore() + "/" + currentCount);
 
         // Contrôle si le quiz est terminé
-        boolean isFinished = Boolean.TRUE.equals(isQuizzFinished(user, currentCount));
-
-        return ResponseEntity.ok(isFinished);
+        return ResponseEntity.ok(Boolean.TRUE.equals(isQuizzFinished(user, currentCount)));
     }
 
     private Boolean isQuizzFinished(User user, int currentCount) {
         if (currentCount >= 10) {
-            // Yanis
-            System.out.println(user.getCurrentScore());
-
             scoreService.updateBestScore(user);
             return true;
         }
