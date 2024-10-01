@@ -1,5 +1,6 @@
 package com.dawan.gquizz.services;
 
+import com.dawan.gquizz.entities.Category;
 import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,6 @@ import java.util.Optional;
 public class UserServiceImpl implements IUserService {
     @Autowired
     public UserRepository userRepository;
-
-    @Override
-    public List<String> findAllCategory() {
-        return List.of();
-    }
 
     @Override
     public User getById(Long userId) throws Exception {

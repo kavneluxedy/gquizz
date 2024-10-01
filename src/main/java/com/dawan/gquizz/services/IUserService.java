@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IUserService {
-    List<String> findAllCategory();
-
     User getById(Long userId) throws Exception;
 
     void create(User user) throws Exception;

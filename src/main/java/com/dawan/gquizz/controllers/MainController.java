@@ -1,11 +1,13 @@
 package com.dawan.gquizz.controllers;
 
 import com.dawan.gquizz.dtos.QuestionDTO;
+import com.dawan.gquizz.entities.Category;
 import com.dawan.gquizz.entities.LastQuizz;
 import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.CategoryRepository;
 import com.dawan.gquizz.repositories.LastQuizzRepository;
 import com.dawan.gquizz.repositories.UserRepository;
+import com.dawan.gquizz.services.CategoryServiceImpl;
 import com.dawan.gquizz.services.LastQuizzServiceImpl;
 import com.dawan.gquizz.services.QuestionServiceImpl;
 import com.dawan.gquizz.services.UserServiceImpl;
@@ -38,11 +40,14 @@ public class MainController {
     private CategoryRepository categoryRepository;
 
     @Autowired
+    private CategoryServiceImpl categoryService;
+
+    @Autowired
     private LastQuizzServiceImpl lastQuizzService;
 
-    @GetMapping(path = "/showCategories")
-    public List<String> showCategories() {
-        return userService.findAllCategory();
+    @GetMapping(path = "/getAllCategories")
+    public List<Category> getAllCategories() {
+        return categoryService.findAllCategories();
     }
 
     @GetMapping(path = "/quiz/{userId}/{categoryLabel}", produces = "application/json")
@@ -51,7 +56,10 @@ public class MainController {
 
         // Set new id questions to lastQuizz
         List<String> idQuestions = new ArrayList<>();
-        questions.forEach(questionDTO -> idQuestions.add(questionDTO.get_id()));
+        questions.forEach(questionDTO -> {
+            System.out.println(questionDTO.get_id());
+            idQuestions.add(questionDTO.get_id());
+        });
 
         Optional<User> optUser = userRepository.findById(userId);
         User user = null;
