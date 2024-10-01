@@ -10,9 +10,9 @@ public interface IUserService {
 
     User getById(Long userId) throws Exception;
 
-    void create(User user) throws Exception;
-
 	void deleteById(Long userId) throws Exception;
 
 	void update(Long userId, User user) throws Exception;
+
+	User create(User user) throws Exception;
 }
