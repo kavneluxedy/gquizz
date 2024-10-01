@@ -28,6 +28,11 @@ import java.util.List;
 public class SecurityConfig {
 	
 	private final CustomUserDetailsService userDetailsService;
+	
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
