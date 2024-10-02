@@ -1,6 +1,7 @@
 package com.dawan.gquizz.controllers;
 
 import com.dawan.gquizz.dtos.QuestionDTO;
+import com.dawan.gquizz.entities.Score;
 import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.CategoryRepository;
 import com.dawan.gquizz.repositories.LastQuizzRepository;
@@ -81,9 +82,8 @@ public class QuizzController {
         // Si c'est la fin du quizz
         if (currentCount >= 10) {
             // ! On met à jour le meilleur score AVANT de reset le score temporaire
-            scoreService.updateBestScore(user);
+            return scoreService.updateBestScore(user).getBestScore();
             // On reset le score temporaire (Last Quizz Score)
-            newQuizzService.resetCurrentScore(user);
         }
 
         return user.getLastQuizz().getCurrentScore();

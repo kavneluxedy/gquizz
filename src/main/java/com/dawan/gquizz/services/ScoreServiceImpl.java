@@ -13,12 +13,17 @@ public class ScoreServiceImpl implements IScoreService {
     @Autowired
     private ScoreRepository scoreRepository;
 
-    public void updateBestScore(User user) {
-        Category cat = user.getLastQuizz().getCategory();
+    @Autowired
+    private NewQuizzService newQuizzService;
 
-        scoreRepository.save(scoreRepository.findOneByUser_IdAndCategory_Id(user.getId(), cat.getId()).map(score -> {
-            if (user.getLastQuizz().getCurrentScore() > score.getBestScore())
-                score.setBestScore(user.getLastQuizz().getCurrentScore());
+    public Score updateBestScore(User user) {
+        Category cat = user.getLastQuizz().getCategory();
+        return scoreRepository.save(scoreRepository.findOneByUser_IdAndCategory_Id(user.getId(), cat.getId()).map(score -> {
+            if (user.getLastQuizz().getCurrentScore() == 0) return null;
+            if (user.getLastQuizz().getCurrentScore() > score.getBestScore()) {
+                return score.setBestScore(user.getLastQuizz().getCurrentScore());
+            }
+            newQuizzService.resetCurrentScore(user);
             return score;
         }).orElseGet(() -> new Score(user, cat, user.getLastQuizz().getCurrentScore())));
     }
