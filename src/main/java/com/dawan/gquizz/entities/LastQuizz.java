@@ -33,4 +33,8 @@ public class LastQuizz extends BaseEntity{
 
     @OneToOne
     private Category category;
+
+    private int currentCount;
+
+    private int currentScore;
 }

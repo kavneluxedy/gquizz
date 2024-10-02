@@ -1,7 +1,6 @@
 package com.dawan.gquizz.controllers;
 
 import com.dawan.gquizz.dtos.QuestionDTO;
-import com.dawan.gquizz.entities.LastQuizz;
 import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.CategoryRepository;
 import com.dawan.gquizz.repositories.LastQuizzRepository;
@@ -16,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import com.dawan.gquizz.repositories.UserRepository;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -43,74 +40,61 @@ public class QuizzController {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private NewQuizzService newQuizzService;
+
     @PostMapping(value = "/answer", consumes = {"*/*"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> isUserAnswerValid(@RequestBody AnswerBody body) throws Exception {
+    public ResponseEntity<Integer> isUserAnswerValid(@RequestBody AnswerBody body) throws Exception {
 
         // Récupere l'utilisateur 
         Optional<User> u = userRepository.findById(body.userId);
         QuestionDTO quiz = questionService.findById(body.questionId);
-        User user = null;
-        LastQuizz lq = null;
 
-        // Contrôle si l'utilisateur existe
-        if (u.isPresent()) {
-            user = u.get();
-            lq = user.getLastQuizz();
-        } else {
-            // Si l'utilisateur n'est pas trouvé propose de créer un compte
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Utilisateur non trouvé. Est-ce que vous voulez créer un compte?");
-            response.put("redirectUrl", "/create-account");
-
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
-
-        //TODO Gérer la validation de réponse pour un utilisateur non-authentifié
-        // Car lq.getIdQuestions is null si pas de user authentifié
-        if (lq == null)
-            lq = lastQuizzRepository.save(new LastQuizz().setUser(user).setCategory(categoryRepository.findByLabel(quiz.getCategory()).setLabel(quiz.getCategory())));
-
-        int currentCount = lq.getIdQuestions().indexOf(body.questionId) + 1;
-        System.out.println("================>: " + currentCount);
-
-        // Contrôle si la reponse se l'utilisateur est correcte
-        if (body.answer.equals(quiz.getAnswer())) {
-            System.out.println("Réponse correcte !");
-
-            user.setCurrentScore(user.getCurrentScore() + 1);
-            userRepository.saveAndFlush(user);
-
-            return ResponseEntity.ok(true);
-
-        } else if (body.answer.isEmpty()) {
+        if (body.answer.isEmpty()) {
+            // Réponse vide
             throw new HttpClientErrorException(HttpStatus.NO_CONTENT);
+        }
+
+        // Contrôle si la reponse de l'utilisateur est correcte
+        if (body.answer.equals(quiz.getAnswer())) {
+            // Bonne réponse
+            return u.map(user -> {
+                user.getLastQuizz().setCurrentCount(user.getLastQuizz().getCurrentCount() + 1).setCurrentScore(user.getLastQuizz().getCurrentScore() + 1);
+                userRepository.saveAndFlush(user);
+                System.out.println("\\\\\\\\\\\\\\\\\\|Bonne réponse/////////////////////////");
+                System.out.println("Score actuel ===> " + user.getLastQuizz().getCurrentScore() + "/" + user.getLastQuizz().getCurrentCount());
+                return ResponseEntity.ok(u.map(usr -> isQuizzFinished(usr, usr.getLastQuizz().getCurrentCount())).get());
+            }).orElseThrow();
         } else {
-            System.out.println("Réponse incorrecte !");
+            // Mauvaise réponse
+            return u.map(user -> {
+                user.getLastQuizz().setCurrentCount(user.getLastQuizz().getCurrentCount() + 1);
+                userRepository.saveAndFlush(user);
+                System.out.println("\\\\\\\\\\\\\\\\\\|Mauvaise réponse/////////////////////////");
+                System.out.println("Score actuel ===> " + user.getLastQuizz().getCurrentScore() + "/" + user.getLastQuizz().getCurrentCount());
+                return ResponseEntity.ok(u.map(usr -> isQuizzFinished(usr, usr.getLastQuizz().getCurrentCount())).get());
+            }).orElseThrow();
         }
-
-        System.out.println("Fin de quizz !!" + " Votre score ===> " + user.getCurrentScore() + "/" + currentCount);
-
-        // Contrôle si le quiz est terminé
-        return ResponseEntity.ok(Boolean.TRUE.equals(
-
-                isQuizzFinished(user, currentCount)));
     }
 
-    private Boolean isQuizzFinished(User user, int currentCount) {
+    private int isQuizzFinished(User user, int currentCount) {
+        // Si c'est la fin du quizz
         if (currentCount >= 10) {
+            // ! On met à jour le meilleur score AVANT de reset le score temporaire
             scoreService.updateBestScore(user);
-            return true;
+            // On reset le score temporaire (Last Quizz Score)
+            newQuizzService.resetCurrentScore(user);
         }
-        return false;
-    }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<String> startNewQuizz(@PathVariable Long userId) { //resetUserCurrentScore = startNewQuiz
-        Optional<User> user = userRepository.findById(userId);
-        return user.map(u -> {
-            u.setCurrentScore(0);
-            userRepository.save(u);
-            return new ResponseEntity<>("Reset Current Score de l'utilisateur " + u.getPseudo(), HttpStatus.OK);
-        }).orElseGet(() -> new ResponseEntity<>("Utilisateur non trouvé ", HttpStatus.NOT_FOUND));
+        return user.getLastQuizz().getCurrentScore();
     }
 }
+
+//TODO
+//            if (u.isEmpty()) {
+//                // Si l'utilisateur n'est pas trouvé propose de créer un compte
+//                Map<String, String> response = new HashMap<>();
+//                response.put("message", "Utilisateur non trouvé. Est-ce que vous voulez créer un compte?");
+//                response.put("redirectUrl", "/create-account");
+//                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+//            }

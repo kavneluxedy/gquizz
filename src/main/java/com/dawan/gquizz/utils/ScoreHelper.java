@@ -11,7 +11,7 @@ public class ScoreHelper {
     }
 
     public static Score createNewScore(User user, Category cat) {
-        Score newScore = new Score().setUser(user).setCategory(cat).setBestScore(user.getCurrentScore());
+        Score newScore = new Score().setUser(user).setCategory(cat).setBestScore(user.getLastQuizz().getCurrentScore());
         System.out.println();
         user.getScores().add(newScore);
         return newScore;

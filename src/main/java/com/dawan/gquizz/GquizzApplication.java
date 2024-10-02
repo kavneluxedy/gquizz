@@ -57,7 +57,6 @@ public class GquizzApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         Category catSport = categoryRepository.saveAndFlush(new Category().setLabel("sport"));
-//        Category catSport = categoryRepository.findByLabel("sport");
         Category catMusique = categoryRepository.saveAndFlush(new Category().setLabel("musique"));
         Category catTvCinema = categoryRepository.saveAndFlush(new Category().setLabel("tv_cinema"));
         Category catActuPolitique = categoryRepository.saveAndFlush(new Category().setLabel("actu_politique"));
@@ -68,9 +67,9 @@ public class GquizzApplication implements CommandLineRunner {
         User user = userRepository.save(new User().setEmail("luc@gmail.com").setPseudo("Lucx67").setPassword("password123"));
         User user2 = userRepository.save(new User().setEmail("jean@gmail.com").setPseudo("DarkJean").setPassword("1234"));
         User user3 = userRepository.save(new User().setEmail("abc@def.com").setPseudo("Alpha-Bête").setPassword("GrouGrou"));
-        scoreRepository.save(new Score().setUser(user).setCategory(catSport).setBestScore(1));
-        //scoreRepository.save(new Score().setUser(user2).setCategory(catSport).setBestScore(999));
-        //scoreRepository.save(new Score().setUser(user3).setCategory(catMusique).setBestScore(150));
+//        scoreRepository.save(new Score().setUser(user).setCategory(catSport));
+//        scoreRepository.save(new Score().setUser(user2).setCategory(catSport));
+//        scoreRepository.save(new Score().setUser(user3).setCategory(catMusique));
 
        /* lastQuizzRepository.save(new LastQuizz()
                 .setIdQuestions(questionService.getQuizByCategory("jeux_videos").stream().map(QuestionDTO::get_id).toList())
@@ -85,14 +84,6 @@ public class GquizzApplication implements CommandLineRunner {
         lastQuizzRepository.save(new LastQuizz()
                 .setIdQuestions(questionService.getQuizByCategory("tv_cinema").stream().map(QuestionDTO::get_id).toList())
                 .setCategory(catTvCinema)*/
-//
-//        System.out.println(scoreRepository.countByUserId(user2.getId()));
-//        System.out.println(scoreRepository.existsByUserIdAndCategoryId(user2.getId(), categoryRepository.findById(1L).get().getId()));
 
-//        try {
-//            System.out.println(scoreService.updateBestScore(3L, catSport.getId()));
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
     }
 }

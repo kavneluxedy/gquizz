@@ -29,9 +29,6 @@ public class User extends BaseEntity {
 
     @OneToOne(mappedBy = "user")
     private LastQuizz lastQuizz;
-
-    @Column(name = "current_score")
-    private int currentScore;
     
     //Pour spring security
     private String role;
