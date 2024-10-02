@@ -56,17 +56,17 @@ public class GquizzApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        Category catSport = categoryRepository.saveAndFlush(new Category().setLabel("sport"));
-        Category catMusique = categoryRepository.saveAndFlush(new Category().setLabel("musique"));
-        Category catTvCinema = categoryRepository.saveAndFlush(new Category().setLabel("tv_cinema"));
-        Category catActuPolitique = categoryRepository.saveAndFlush(new Category().setLabel("actu_politique"));
-        Category catArtLitterature = categoryRepository.saveAndFlush(new Category().setLabel("art_litterature"));
-        Category catJeuxVideos = categoryRepository.saveAndFlush(new Category().setLabel("jeux_videos"));
-        Category catCultureG = categoryRepository.saveAndFlush(new Category().setLabel("culture_generale"));
+//        Category catSport = categoryRepository.saveAndFlush(new Category().setLabel("sport"));
+//        Category catMusique = categoryRepository.saveAndFlush(new Category().setLabel("musique"));
+//        Category catTvCinema = categoryRepository.saveAndFlush(new Category().setLabel("tv_cinema"));
+//        Category catActuPolitique = categoryRepository.saveAndFlush(new Category().setLabel("actu_politique"));
+//        Category catArtLitterature = categoryRepository.saveAndFlush(new Category().setLabel("art_litterature"));
+//        Category catJeuxVideos = categoryRepository.saveAndFlush(new Category().setLabel("jeux_videos"));
+//        Category catCultureG = categoryRepository.saveAndFlush(new Category().setLabel("culture_generale"));
 
-        User user = userRepository.save(new User().setEmail("luc@gmail.com").setPseudo("Lucx67").setPassword("password123"));
-        User user2 = userRepository.save(new User().setEmail("jean@gmail.com").setPseudo("DarkJean").setPassword("1234"));
-        User user3 = userRepository.save(new User().setEmail("abc@def.com").setPseudo("Alpha-Bête").setPassword("GrouGrou"));
+//        User user = userRepository.save(new User().setEmail("luc@gmail.com").setPseudo("Lucx67").setPassword("password123"));
+//        User user2 = userRepository.save(new User().setEmail("jean@gmail.com").setPseudo("DarkJean").setPassword("1234"));
+//        User user3 = userRepository.save(new User().setEmail("abc@def.com").setPseudo("Alpha-Bête").setPassword("GrouGrou"));
 //        scoreRepository.save(new Score().setUser(user).setCategory(catSport));
 //        scoreRepository.save(new Score().setUser(user2).setCategory(catSport));
 //        scoreRepository.save(new Score().setUser(user3).setCategory(catMusique));

@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @Getter
 @Setter
-@Accessors(chain = true) // on all entities
+@Accessors(chain = true)
 @Entity
 @Table(name = "scores")
 public class Score extends BaseEntity {
