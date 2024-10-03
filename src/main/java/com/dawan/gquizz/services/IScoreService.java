@@ -7,8 +7,13 @@ import com.dawan.gquizz.entities.User;
 
 import java.util.List;
 
+//Interface définissant les services liés aux scores
 public interface IScoreService {
-    Score updateBestScore(User user);
 
-    List<ScoreDTO> getTopScoreByCategory(Category categoryId);
+ // Méthode pour mettre à jour le meilleur score d'un utilisateur
+ Score updateBestScore(User user);
+
+ // Méthode pour obtenir la liste des meilleurs scores pour une catégorie spécifiée
+ List<ScoreDTO> getTopScoreByCategory(Category categoryId);
 }
+

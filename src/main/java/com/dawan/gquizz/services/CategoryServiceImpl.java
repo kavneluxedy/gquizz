@@ -10,11 +10,15 @@ import java.util.List;
 @Service
 public class CategoryServiceImpl implements ICategoryService {
 
+    // Injection de dépendance du repository CategoryRepository
     @Autowired
     private CategoryRepository categoryRepository;
 
+    // Implémentation de la méthode pour récupérer toutes les catégories
     @Override
     public List<Category> findAllCategories() {
+        // Appel du repository pour récupérer toutes les catégories
         return categoryRepository.findAll();
     }
 }
+

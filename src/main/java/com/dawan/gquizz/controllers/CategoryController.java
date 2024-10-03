@@ -12,10 +12,14 @@ import java.util.List;
 @RequestMapping("/api")
 public class CategoryController {
 
-    @Autowired
-    private CategoryServiceImpl categoryService;
+	// Injection de la dépendance CategoryServiceImpl qui contient les méthodes pour gérer les catégories
+	@Autowired
+	private CategoryServiceImpl categoryService;
 
-    public List<Category> findAllCategory() {
-        return categoryService.findAllCategories();
-    }
+	// Méthode pour récupérer toutes les catégories
+	// Elle appelle la méthode findAllCategories() du service injecté
+	public List<Category> findAllCategory() {
+	    return categoryService.findAllCategories(); // Renvoie la liste de toutes les catégories
+	}
+
 }

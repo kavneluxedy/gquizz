@@ -20,10 +20,6 @@ public class LastQuizz extends BaseEntity{
 
 	private static final long serialVersionUID = 3470336777702835412L;
 
-	//@Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    //private long id;
-
     @ElementCollection
     private List<String> idQuestions;
 

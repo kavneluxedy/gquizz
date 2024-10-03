@@ -22,28 +22,40 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RegistrationLoginController {
 
-    private final UserRepository userRepository;
+	// Déclaration des dépendances injectées via constructeur ou autre méthode
+	private final UserRepository userRepository; // Repository pour gérer les utilisateurs en base de données
+	private final PasswordEncoder passwordEncoder; // Encodeur de mot de passe (ex: BCrypt) pour sécuriser les mots de passe
+	private final AuthenticationManager authenticationManager; // Gestionnaire d'authentification pour valider les identifiants
 
-    private final PasswordEncoder passwordEncoder;
+	// Endpoint POST pour l'inscription d'un utilisateur
+	@PostMapping("/register")
+	public ResponseEntity<?> registerUser(@RequestBody User user) {
+	    // Vérification si l'email existe déjà dans la base de données
+	    if (userRepository.findByEmail(user.getEmail()) != null) {
+	        // Si l'email est déjà utilisé, retourne une réponse d'erreur avec un statut HTTP 400 (Bad Request)
+	        return ResponseEntity.badRequest().body("L'email existe déjà.");
+	    }
+	    
+	    // Si l'email n'existe pas, le mot de passe de l'utilisateur est encodé pour la sécurité
+	    user.setPassword(passwordEncoder.encode(user.getPassword()));
+	    
+	    // Sauvegarde de l'utilisateur dans la base de données et retour d'une réponse HTTP 200 (OK)
+	    return ResponseEntity.ok(userRepository.save(user));
+	}
 
-    private final AuthenticationManager authenticationManager;
+	// Endpoint POST pour la connexion d'un utilisateur
+	@PostMapping("/login")
+	public ResponseEntity<?> loginUser(@RequestBody User user) {
+	    try {
+	        // Authentification de l'utilisateur avec l'email et le mot de passe fournis
+	        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+	        
+	        // Si l'authentification réussit, retourne une réponse HTTP 200 (OK)
+	        return ResponseEntity.ok("Authentification validée");
+	    } catch (Exception e) {
+	        // En cas d'échec de l'authentification (ex: mauvais email ou mot de passe), retourne une réponse HTTP 401 (Unauthorized)
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email ou mot de passe invalide");
+	    }
+	}
 
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
-        if (userRepository.findByEmail(user.getEmail()) != null) {
-            return ResponseEntity.badRequest().body("L'email existe déjà.");
-        }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return ResponseEntity.ok(userRepository.save(user));
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody User user) {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
-            return ResponseEntity.ok("Authentification validé");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email ou mot de passe invalide");
-        }
-    }
 }

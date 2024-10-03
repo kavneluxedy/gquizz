@@ -23,67 +23,44 @@ import org.springframework.web.client.RestTemplate;
 
 public class GquizzApplication implements CommandLineRunner {
 
-    @Configuration
-    public static class Config {
-        @Bean
-        public RestTemplate restTemplate(RestTemplateBuilder builder) {
-            return builder.build();
-        }
-    }
+	@Configuration
+	public static class Config {
+	    
+	    // Déclare un bean RestTemplate qui sera utilisé pour faire des appels HTTP dans l'application
+	    @Bean
+	    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+	        return builder.build();
+	    }
+	}
 
-    @Autowired
-    private UserRepository userRepository;
+	// Injecte l'instance de UserRepository pour interagir avec la base de données des utilisateurs
+	@Autowired
+	private UserRepository userRepository;
 
-    @Autowired
-    private IQuestionService questionService;
+	@Autowired
+	private IQuestionService questionService; // Gestion des questions
 
-    @Autowired
-    private LastQuizzRepository lastQuizzRepository;
+	@Autowired
+	private LastQuizzRepository lastQuizzRepository; // Gestion des derniers quiz joués
 
-    @Autowired
-    private ScoreRepository scoreRepository;
+	@Autowired
+	private ScoreRepository scoreRepository; // Gestion des scores des utilisateurs
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+	@Autowired
+	private CategoryRepository categoryRepository; // Gestion des catégories
 
-    @Autowired
-    private ScoreServiceImpl scoreService;
+	@Autowired
+	private ScoreServiceImpl scoreService; // Service pour la gestion des scores
 
-    public static void main(String[] args) {
-        SpringApplication.run(GquizzApplication.class, args);
-    }
+	// Point d'entrée de l'application Spring Boot
+	public static void main(String[] args) {
+	    SpringApplication.run(GquizzApplication.class, args); // Lancement de l'application
+	}
 
-    @Override
-    public void run(String... args) throws Exception {
+	// Méthode exécutée après le démarrage de l'application, actuellement vide
+	@Override
+	public void run(String... args) throws Exception {
 
-//        Category catSport = categoryRepository.saveAndFlush(new Category().setLabel("sport"));
-//        Category catMusique = categoryRepository.saveAndFlush(new Category().setLabel("musique"));
-//        Category catTvCinema = categoryRepository.saveAndFlush(new Category().setLabel("tv_cinema"));
-//        Category catActuPolitique = categoryRepository.saveAndFlush(new Category().setLabel("actu_politique"));
-//        Category catArtLitterature = categoryRepository.saveAndFlush(new Category().setLabel("art_litterature"));
-//        Category catJeuxVideos = categoryRepository.saveAndFlush(new Category().setLabel("jeux_videos"));
-//        Category catCultureG = categoryRepository.saveAndFlush(new Category().setLabel("culture_generale"));
+	}
 
-//        User user = userRepository.save(new User().setEmail("luc@gmail.com").setPseudo("Lucx67").setPassword("password123"));
-//        User user2 = userRepository.save(new User().setEmail("jean@gmail.com").setPseudo("DarkJean").setPassword("1234"));
-//        User user3 = userRepository.save(new User().setEmail("abc@def.com").setPseudo("Alpha-Bête").setPassword("GrouGrou"));
-//        scoreRepository.save(new Score().setUser(user).setCategory(catSport));
-//        scoreRepository.save(new Score().setUser(user2).setCategory(catSport));
-//        scoreRepository.save(new Score().setUser(user3).setCategory(catMusique));
-
-       /* lastQuizzRepository.save(new LastQuizz()
-                .setIdQuestions(questionService.getQuizByCategory("jeux_videos").stream().map(QuestionDTO::get_id).toList())
-                .setCategory(catJeuxVideos)
-                .setUser(userRepository.findById(1L).get()));
-
-        lastQuizzRepository.save(new LastQuizz()
-                .setIdQuestions(questionService.getQuizByCategory("sport").stream().map(QuestionDTO::get_id).toList())
-                .setCategory(catSport)
-                .setUser(userRepository.findById(2L).get()));
-
-        lastQuizzRepository.save(new LastQuizz()
-                .setIdQuestions(questionService.getQuizByCategory("tv_cinema").stream().map(QuestionDTO::get_id).toList())
-                .setCategory(catTvCinema)*/
-
-    }
 }

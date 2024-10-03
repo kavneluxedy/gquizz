@@ -15,18 +15,29 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailsService implements UserDetailsService{
-	
-	private final UserRepository userRepository;
+public class CustomUserDetailsService implements UserDetailsService {
+    
+    // Référence au repository utilisateur pour interagir avec la base de données
+    private final UserRepository userRepository;
 
-	@Override
-	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		User user = userRepository.findByEmail(email);
-		
-		if(user == null) {
-			throw new  UsernameNotFoundException("Aucun utilisateur ne correspond à : " + email);
-		}
-		return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), 
-				Collections.singletonList(new SimpleGrantedAuthority(user.getRole())));
-	}
-} 
+    // Méthode pour charger les détails de l'utilisateur par son nom d'utilisateur (email)
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        // Recherche d'un utilisateur dans la base de données par son email
+        User user = userRepository.findByEmail(email);
+        
+        // Vérification si l'utilisateur existe
+        if(user == null) {
+            // Si l'utilisateur n'est pas trouvé, une exception est lancée
+            throw new UsernameNotFoundException("Aucun utilisateur ne correspond à : " + email);
+        }
+        
+        // Création et retour d'un objet UserDetails avec l'email, le mot de passe, et les rôles de l'utilisateur
+        return new org.springframework.security.core.userdetails.User(
+            user.getEmail(), // Email de l'utilisateur
+            user.getPassword(), // Mot de passe de l'utilisateur (doit être crypté)
+            Collections.singletonList(new SimpleGrantedAuthority(user.getRole())) // Liste des rôles de l'utilisateur sous forme d'autorité
+        );
+    }
+}
+

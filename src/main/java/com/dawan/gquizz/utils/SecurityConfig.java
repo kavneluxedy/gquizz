@@ -27,35 +27,56 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+	// Injection de dépendance pour le service personnalisé de détails de l'utilisateur
 	private final CustomUserDetailsService userDetailsService;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	// Bean pour encoder les mots de passe à l'aide de BCrypt
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+	    // Utilisation de BCrypt pour le hachage des mots de passe
+	    return new BCryptPasswordEncoder();
+	}
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PATCH", "OPTIONS"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+	// Bean pour configurer CORS (Cross-Origin Resource Sharing)
+	@Bean
+	CorsConfigurationSource corsConfigurationSource() {
+	    CorsConfiguration configuration = new CorsConfiguration();
+	    
+	    // Autorise toutes les origines
+	    configuration.setAllowedOrigins(List.of("*"));
+	    
+	    // Définit les méthodes HTTP autorisées
+	    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PATCH", "OPTIONS"));
+	    
+	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	    
+	    // Applique la configuration CORS à toutes les URL
+	    source.registerCorsConfiguration("/**", configuration);
+	    return source;
+	}
 
-    @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(authorize ->
-                authorize.requestMatchers("/login").permitAll()
-                        .anyRequest().permitAll()).build();
-    }
+	// Bean pour configurer le filtre de sécurité
+	@Bean
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	    return http.csrf(AbstractHttpConfigurer::disable) // Désactive la protection CSRF
+	            .authorizeHttpRequests(authorize -> 
+	                // Autorise l'accès à l'URL de connexion
+	                authorize.requestMatchers("/login").permitAll()
+	                .anyRequest().permitAll() // Permet l'accès à toutes les autres requêtes
+	            ).build(); // Construit la chaîne de filtres de sécurité
+	}
 
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder passwordEncoder) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+	// Bean pour configurer le gestionnaire d'authentification
+	@Bean
+	public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder passwordEncoder) throws Exception {
+	    // Obtient l'instance de AuthenticationManagerBuilder
+	    AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+	    
+	    // Configure le gestionnaire d'authentification avec le service utilisateur et l'encodeur de mot de passe
+	    authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
 
-        return authenticationManagerBuilder.build();
-    }
+	    // Retourne le gestionnaire d'authentification construit
+	    return authenticationManagerBuilder.build();
+	}
+
 }

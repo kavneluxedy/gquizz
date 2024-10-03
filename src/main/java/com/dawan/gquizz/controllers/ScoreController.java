@@ -20,16 +20,19 @@ import java.util.List;
 @RequestMapping("/score")
 public class ScoreController {
 
-    @Autowired
-    private ScoreServiceImpl scoreService;
+	@Autowired
+	private ScoreServiceImpl scoreService; // Service qui gère la logique métier pour les scores
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+	@Autowired
+	private CategoryRepository categoryRepository; // Repository pour gérer les catégories dans la base de données
 
-    @GetMapping("/top/{categoryLabel}")
-    public List<ScoreDTO> getTopScoreByCategory(@PathVariable("categoryLabel") String categoryLabel) {
-        // DO OPTIONAL
-        Category cat = categoryRepository.findByLabel(categoryLabel);
-        return scoreService.getTopScoreByCategory(cat);
-    }
+	// Endpoint GET pour récupérer les meilleurs scores par catégorie
+	@GetMapping("/top/{categoryLabel}")
+	public List<ScoreDTO> getTopScoreByCategory(@PathVariable("categoryLabel") String categoryLabel) {
+	    // Recherche de la catégorie à partir du label fourni dans l'URL
+	    Category cat = categoryRepository.findByLabel(categoryLabel);
+	    
+	    // Retourne la liste des meilleurs scores pour cette catégorie en appelant le service des scores
+	    return scoreService.getTopScoreByCategory(cat);
+	}
 }
