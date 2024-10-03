@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class ScoreDTO {
-
-    private Category category;
-
+    private String userPseudo;
+    private String categoryLabel;
     private int bestScore;
 }
