@@ -38,8 +38,7 @@ public class ScoreServiceImpl implements IScoreService {
                     if (user.getLastQuizz().getCurrentScore() > score.getBestScore()) {
                         score.setBestScore(user.getLastQuizz().getCurrentScore());
                     }
-                    // Réinitialiser le score courant
-                    newQuizzService.resetCurrentScore(user);
+
                     return score;
                 }).orElseGet(() ->
                         // Si aucun score n'est trouvé, créer un nouveau score pour l'utilisateur
