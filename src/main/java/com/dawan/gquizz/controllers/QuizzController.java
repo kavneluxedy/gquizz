@@ -45,7 +45,7 @@ public class QuizzController {
     private NewQuizzService newQuizzService;
 
     @PostMapping(value = "/answer", consumes = {"*/*"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Integer> isUserAnswerValid(@RequestBody AnswerBody body) throws Exception {
+    public ResponseEntity<Boolean> isUserAnswerValid(@RequestBody AnswerBody body) throws Exception {
 
         // Récupere l'utilisateur 
         Optional<User> u = userRepository.findById(body.userId);
@@ -56,45 +56,35 @@ public class QuizzController {
             throw new HttpClientErrorException(HttpStatus.NO_CONTENT);
         }
 
-        // Contrôle si la reponse de l'utilisateur est correcte
-        if (body.answer.equals(quiz.getAnswer())) {
-            // Bonne réponse
-            return u.map(user -> {
+        return u.map(user -> {
+            // Contrôle si la reponse de l'utilisateur est correcte
+            if (body.answer.equals(quiz.getAnswer())) {
+                // Bonne réponse
                 user.getLastQuizz().setCurrentCount(user.getLastQuizz().getCurrentCount() + 1).setCurrentScore(user.getLastQuizz().getCurrentScore() + 1);
                 userRepository.saveAndFlush(user);
                 System.out.println("\\\\\\\\\\\\\\\\\\|Bonne réponse/////////////////////////");
                 System.out.println("Score actuel ===> " + user.getLastQuizz().getCurrentScore() + "/" + user.getLastQuizz().getCurrentCount());
-                return ResponseEntity.ok(u.map(usr -> isQuizzFinished(usr, usr.getLastQuizz().getCurrentCount())).get());
-            }).orElseThrow();
-        } else {
-            // Mauvaise réponse
-            return u.map(user -> {
+                return ResponseEntity.ok(true);
+            } else {
+                // Mauvaise réponse
                 user.getLastQuizz().setCurrentCount(user.getLastQuizz().getCurrentCount() + 1);
                 userRepository.saveAndFlush(user);
                 System.out.println("\\\\\\\\\\\\\\\\\\|Mauvaise réponse/////////////////////////");
                 System.out.println("Score actuel ===> " + user.getLastQuizz().getCurrentScore() + "/" + user.getLastQuizz().getCurrentCount());
-                return ResponseEntity.ok(u.map(usr -> isQuizzFinished(usr, usr.getLastQuizz().getCurrentCount())).get());
-            }).orElseThrow();
-        }
+                return ResponseEntity.ok(false);
+            }
+        }).get();
     }
 
-    private int isQuizzFinished(User user, int currentCount) {
-        // Si c'est la fin du quizz
-        if (currentCount >= 10) {
-            // ! On met à jour le meilleur score AVANT de reset le score temporaire
-            return scoreService.updateBestScore(user).getBestScore();
-            // On reset le score temporaire (Last Quizz Score)
-        }
-
-        return user.getLastQuizz().getCurrentScore();
+    @GetMapping("/{userId}/isQuizzFinished")
+    public boolean isQuizzFinished(@PathVariable("userId") Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        return user.map(u -> {
+            System.out.println(u.getLastQuizz().getCurrentCount() >= 10 && u.getLastQuizz().getCurrentScore() <= u.getLastQuizz().getCurrentCount());
+            // ! On met à jour le meilleur score ET on reset le score temporaire
+            scoreService.updateBestScore(u);
+            // Si c'est la fin du quizz
+            return u.getLastQuizz().getCurrentCount() >= 10 && u.getLastQuizz().getCurrentScore() <= u.getLastQuizz().getCurrentCount();
+        }).get();
     }
 }
-
-//TODO
-//            if (u.isEmpty()) {
-//                // Si l'utilisateur n'est pas trouvé propose de créer un compte
-//                Map<String, String> response = new HashMap<>();
-//                response.put("message", "Utilisateur non trouvé. Est-ce que vous voulez créer un compte?");
-//                response.put("redirectUrl", "/create-account");
-//                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-//            }
