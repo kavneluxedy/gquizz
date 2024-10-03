@@ -13,7 +13,9 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(chain = true)
 @Entity
-@Table(name = "scores")
+@Table(name = "scores", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "category_id"})
+})
 public class Score extends BaseEntity {
 
     private static final long serialVersionUID = 3739609421340440851L;

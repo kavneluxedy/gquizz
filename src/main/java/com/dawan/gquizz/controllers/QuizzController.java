@@ -77,14 +77,18 @@ public class QuizzController {
     }
 
     @GetMapping("/{userId}/isQuizzFinished")
-    public boolean isQuizzFinished(@PathVariable("userId") Long userId) {
+    public ResponseEntity<Boolean> isQuizzFinished(@PathVariable("userId") Long userId) throws Exception {
         Optional<User> user = userRepository.findById(userId);
-        return user.map(u -> {
-            System.out.println(u.getLastQuizz().getCurrentCount() >= 10 && u.getLastQuizz().getCurrentScore() <= u.getLastQuizz().getCurrentCount());
-            // ! On met à jour le meilleur score ET on reset le score temporaire
-            scoreService.updateBestScore(u);
-            // Si c'est la fin du quizz
-            return u.getLastQuizz().getCurrentCount() >= 10 && u.getLastQuizz().getCurrentScore() <= u.getLastQuizz().getCurrentCount();
-        }).get();
+        if (user.isPresent()) {
+            return user.map(u -> {
+                boolean isFinished = (u.getLastQuizz().getCurrentCount() >= 10 && u.getLastQuizz().getCurrentScore() <= u.getLastQuizz().getCurrentCount());
+                // ! On met à jour le meilleur score ET on reset le score temporaire
+                if (isFinished) scoreService.updateBestScore(u);
+                // Si c'est la fin du quizz
+                return ResponseEntity.ok(isFinished);
+            }).get();
+        } else {
+            throw new Exception("User not found");
+        }
     }
 }

@@ -18,6 +18,6 @@ public interface ScoreRepository extends JpaRepository<Score, Long> {
     Optional<List<Score>> findByCategoryOrderByBestScore(@Param("category") Category category);
 
     // Méthode pour récupérer un score spécifique en fonction de l'ID de l'utilisateur et de l'ID de la catégorie
-    Optional<Score> findOneByUser_IdAndCategory_Id(@Param("userId") Long userId, @Param("categoryId") Long categoryId);
+    Optional<Score> findFirstByUser_IdAndCategory_Id(@Param("userId") Long userId, @Param("categoryId") Long categoryId);
 }
 

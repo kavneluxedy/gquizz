@@ -2,7 +2,6 @@ package com.dawan.gquizz.services;
 
 import com.dawan.gquizz.dtos.ScoreDTO;
 import com.dawan.gquizz.entities.Category;
-import com.dawan.gquizz.entities.LastQuizz;
 import com.dawan.gquizz.entities.Score;
 import com.dawan.gquizz.entities.User;
 import com.dawan.gquizz.repositories.ScoreRepository;
@@ -31,14 +30,15 @@ public class ScoreServiceImpl implements IScoreService {
         Category cat = user.getLastQuizz().getCategory();
 
         // Recherche du score de l'utilisateur dans la base de données pour cette catégorie
-        return scoreRepository.save(scoreRepository.findOneByUser_IdAndCategory_Id(user.getId(), cat.getId()).map(score -> {
+        return scoreRepository.save(scoreRepository.findFirstByUser_IdAndCategory_Id(user.getId(), cat.getId()).map(score -> {
                     // Si le score actuel est 0, ne rien faire
                     if (user.getLastQuizz().getCurrentScore() == 0) return null;
+
                     // Si le score actuel est supérieur au meilleur score enregistré, mettre à jour le meilleur score
                     if (user.getLastQuizz().getCurrentScore() > score.getBestScore()) {
                         score.setBestScore(user.getLastQuizz().getCurrentScore());
                     }
-                    // Réinitialiser le score courant si le meilleur score n'a pas changé
+                    // Réinitialiser le score courant
                     newQuizzService.resetCurrentScore(user);
                     return score;
                 }).orElseGet(() ->
