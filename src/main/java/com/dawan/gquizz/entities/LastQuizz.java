@@ -16,9 +16,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @Entity
 @Table(name = "last_quizz")
-public class LastQuizz extends BaseEntity{
+public class LastQuizz extends BaseEntity {
 
-	private static final long serialVersionUID = 3470336777702835412L;
+    private static final long serialVersionUID = 3470336777702835412L;
 
     @ElementCollection
     private List<String> idQuestions;

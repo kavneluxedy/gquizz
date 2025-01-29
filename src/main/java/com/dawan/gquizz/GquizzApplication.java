@@ -89,8 +89,8 @@ public class GquizzApplication implements CommandLineRunner {
         for (int i = 0; i <= 6; i++) {
 //            lastQuizzRepository.saveAndFlush(new LastQuizz().setUser(user).setCategory(listCat.get(i)).setCurrentScore(i+6).setCurrentCount(10).setIdQuestions(new ArrayList<>()));
             scoreRepository.saveAndFlush(new Score().setUser(user).setCategory(listCat.get(i)).setBestScore(i));
-            scoreRepository.saveAndFlush(new Score().setUser(user2).setCategory(listCat.get(i)).setBestScore(i+1));
-            scoreRepository.saveAndFlush(new Score().setUser(user3).setCategory(listCat.get(i)).setBestScore(i+2));
+            scoreRepository.saveAndFlush(new Score().setUser(user2).setCategory(listCat.get(i)).setBestScore(i + 1));
+            scoreRepository.saveAndFlush(new Score().setUser(user3).setCategory(listCat.get(i)).setBestScore(i + 2));
         }
 //        System.out.println(scoreRepository.findFirstByUser_IdAndCategory_Id(2L, 1L).get());
         System.out.println("+++++++++++++++++++++++++++++++++++++++++");

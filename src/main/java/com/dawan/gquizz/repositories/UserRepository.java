@@ -13,7 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // Surcharge de la méthode findById pour retourner un Optional d'un utilisateur par son ID
     @Override
     Optional<User> findById(Long userId);
-    
+
     // Méthode personnalisée pour trouver un utilisateur par son adresse email
     User findByEmail(String email);
 }

@@ -7,7 +7,7 @@ import java.util.List;
 //Interface définissant les services liés aux catégories
 public interface ICategoryService {
 
- // Méthode pour récupérer toutes les catégories
- List<Category> findAllCategories();
+    // Méthode pour récupérer toutes les catégories
+    List<Category> findAllCategories();
 }
 

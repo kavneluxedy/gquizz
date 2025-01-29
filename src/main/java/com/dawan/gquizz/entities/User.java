@@ -29,7 +29,7 @@ public class User extends BaseEntity {
 
     @OneToOne(mappedBy = "user")
     private LastQuizz lastQuizz;
-    
+
     //Pour spring security
     private String role;
 }
